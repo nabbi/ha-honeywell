@@ -9,13 +9,14 @@ from aiohttp import ClientConnectionError
 from aiosomecomfort import (
     APIRateLimited,
     AuthError,
-    ConnectionError as AscConnectionError,
     SomeComfortError,
     UnauthorizedError,
     UnexpectedResponse,
 )
+from aiosomecomfort import (
+    ConnectionError as AscConnectionError,
+)
 from aiosomecomfort.device import Device as SomeComfortDevice
-
 from homeassistant.components.climate import (
     ATTR_TARGET_TEMP_HIGH,
     ATTR_TARGET_TEMP_LOW,
@@ -34,7 +35,8 @@ from homeassistant.components.climate import (
 from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
-from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util.unit_conversion import TemperatureConverter
@@ -115,19 +117,13 @@ async def async_setup_entry(
     remove_stale_devices(hass, entry, data.devices)
 
 
-def _async_migrate_unique_id(
-    hass: HomeAssistant, devices: dict[str, SomeComfortDevice]
-) -> None:
+def _async_migrate_unique_id(hass: HomeAssistant, devices: dict[str, SomeComfortDevice]) -> None:
     """Migrate entities to string."""
     entity_registry = er.async_get(hass)
     for device in devices.values():
-        entity_id = entity_registry.async_get_entity_id(
-            "climate", DOMAIN, device.deviceid
-        )
+        entity_id = entity_registry.async_get_entity_id("climate", DOMAIN, device.deviceid)
         if entity_id is not None:
-            entity_registry.async_update_entity(
-                entity_id, new_unique_id=str(device.deviceid)
-            )
+            entity_registry.async_update_entity(entity_id, new_unique_id=str(device.deviceid))
 
 
 def remove_stale_devices(
@@ -137,9 +133,7 @@ def remove_stale_devices(
 ) -> None:
     """Remove stale devices from device registry."""
     device_registry = dr.async_get(hass)
-    device_entries = dr.async_entries_for_config_entry(
-        device_registry, config_entry.entry_id
-    )
+    device_entries = dr.async_entries_for_config_entry(device_registry, config_entry.entry_id)
     all_device_ids = {device.deviceid for device in devices.values()}
 
     for device_entry in device_entries:
@@ -216,10 +210,10 @@ class HoneywellUSThermostat(ClimateEntity):
                 ClimateEntityFeature.TURN_OFF | ClimateEntityFeature.TURN_ON
             )
 
-        if device._data.get("canControlHumidification"):  # noqa: SLF001
+        if device._data.get("canControlHumidification"):
             self._attr_supported_features |= ClimateEntityFeature.TARGET_HUMIDITY
 
-        if not device._data.get("hasFan"):  # noqa: SLF001
+        if not device._data.get("hasFan"):
             return
 
         # not all honeywell fans support all modes
@@ -248,15 +242,15 @@ class HoneywellUSThermostat(ClimateEntity):
     def min_temp(self) -> float:
         """Return the minimum temperature."""
         if self.hvac_mode == HVACMode.COOL:
-            return self._device.raw_ui_data["CoolLowerSetptLimit"]
+            return float(self._device.raw_ui_data["CoolLowerSetptLimit"])
         if self.hvac_mode == HVACMode.HEAT:
-            return self._device.raw_ui_data["HeatLowerSetptLimit"]
+            return float(self._device.raw_ui_data["HeatLowerSetptLimit"])
         if self.hvac_mode == HVACMode.HEAT_COOL:
-            return min(
-                [
+            return float(
+                min(
                     self._device.raw_ui_data["CoolLowerSetptLimit"],
                     self._device.raw_ui_data["HeatLowerSetptLimit"],
-                ]
+                )
             )
         return TemperatureConverter.convert(
             DEFAULT_MIN_TEMP, UnitOfTemperature.CELSIUS, self.temperature_unit
@@ -266,15 +260,15 @@ class HoneywellUSThermostat(ClimateEntity):
     def max_temp(self) -> float:
         """Return the maximum temperature."""
         if self.hvac_mode == HVACMode.COOL:
-            return self._device.raw_ui_data["CoolUpperSetptLimit"]
+            return float(self._device.raw_ui_data["CoolUpperSetptLimit"])
         if self.hvac_mode == HVACMode.HEAT:
-            return self._device.raw_ui_data["HeatUpperSetptLimit"]
+            return float(self._device.raw_ui_data["HeatUpperSetptLimit"])
         if self.hvac_mode == HVACMode.HEAT_COOL:
-            return max(
-                [
+            return float(
+                max(
                     self._device.raw_ui_data["CoolUpperSetptLimit"],
                     self._device.raw_ui_data["HeatUpperSetptLimit"],
-                ]
+                )
             )
         return TemperatureConverter.convert(
             DEFAULT_MAX_TEMP, UnitOfTemperature.CELSIUS, self.temperature_unit
@@ -283,7 +277,8 @@ class HoneywellUSThermostat(ClimateEntity):
     @property
     def current_humidity(self) -> int | None:
         """Return the current humidity."""
-        return self._device.current_humidity
+        value: int | None = self._device.current_humidity
+        return value
 
     @property
     def hvac_mode(self) -> HVACMode | None:
@@ -300,29 +295,30 @@ class HoneywellUSThermostat(ClimateEntity):
     @property
     def current_temperature(self) -> float | None:
         """Return the current temperature."""
-        return self._device.current_temperature
+        value: float | None = self._device.current_temperature
+        return value
 
     @property
     def target_temperature(self) -> float | None:
         """Return the temperature we try to reach."""
         if self.hvac_mode == HVACMode.COOL:
-            return self._device.setpoint_cool
+            return float(self._device.setpoint_cool)
         if self.hvac_mode == HVACMode.HEAT:
-            return self._device.setpoint_heat
+            return float(self._device.setpoint_heat)
         return None
 
     @property
     def target_temperature_high(self) -> float | None:
         """Return the highbound target temperature we try to reach."""
         if self.hvac_mode == HVACMode.HEAT_COOL:
-            return self._device.setpoint_cool
+            return float(self._device.setpoint_cool)
         return None
 
     @property
     def target_temperature_low(self) -> float | None:
         """Return the lowbound target temperature we try to reach."""
         if self.hvac_mode == HVACMode.HEAT_COOL:
-            return self._device.setpoint_heat
+            return float(self._device.setpoint_heat)
         return None
 
     @property
@@ -354,7 +350,7 @@ class HoneywellUSThermostat(ClimateEntity):
         cool_status = self._device.raw_ui_data.get("StatusCool", 0)
         return MODE_PERMANENT_HOLD in (heat_status, cool_status)
 
-    async def _set_temperature(self, **kwargs) -> None:
+    async def _set_temperature(self, **kwargs: Any) -> None:
         """Set new target temperature."""
         if (temperature := kwargs.get(ATTR_TEMPERATURE)) is None:
             return
@@ -364,12 +360,8 @@ class HoneywellUSThermostat(ClimateEntity):
             # Set hold if this is not the case
             if self._device.hold_heat is False and self._device.hold_cool is False:
                 # Get next period time
-                hour_heat, minute_heat = divmod(
-                    self._device.raw_ui_data["HeatNextPeriod"] * 15, 60
-                )
-                hour_cool, minute_cool = divmod(
-                    self._device.raw_ui_data["CoolNextPeriod"] * 15, 60
-                )
+                hour_heat, minute_heat = divmod(self._device.raw_ui_data["HeatNextPeriod"] * 15, 60)
+                hour_cool, minute_cool = divmod(self._device.raw_ui_data["CoolNextPeriod"] * 15, 60)
                 # Set temporary hold time and temperature
                 if mode in COOLING_MODES:
                     await self._device.set_hold_cool(
@@ -473,7 +465,8 @@ class HoneywellUSThermostat(ClimateEntity):
 
         except SomeComfortError as err:
             _LOGGER.error(
-                "Temperature out of range. Mode: %s, Heat Temperature:  %.1f, Cool Temperature: %.1f",
+                "Temperature out of range. Mode: %s, Heat Temperature: "
+                " %.1f, Cool Temperature: %.1f",
                 mode,
                 self._heat_away_temp,
                 self._cool_away_temp,

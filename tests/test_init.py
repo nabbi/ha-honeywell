@@ -2,23 +2,22 @@
 
 from unittest.mock import MagicMock, create_autospec, patch
 
-from aiohttp.client_exceptions import ClientConnectionError
 import aiosomecomfort
 import pytest
+from aiohttp.client_exceptions import ClientConnectionError
+from homeassistant.config_entries import ConfigEntryState
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.honeywell.const import (
     CONF_COOL_AWAY_TEMPERATURE,
     CONF_HEAT_AWAY_TEMPERATURE,
     DOMAIN,
 )
-from homeassistant.config_entries import ConfigEntryState
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry as dr
 
 from . import init_integration
-
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 MIGRATE_OPTIONS_KEYS = {CONF_COOL_AWAY_TEMPERATURE, CONF_HEAT_AWAY_TEMPERATURE}
 
@@ -30,9 +29,7 @@ async def test_setup_entry(hass: HomeAssistant, config_entry: MockConfigEntry) -
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
     assert config_entry.state is ConfigEntryState.LOADED
-    assert (
-        hass.states.async_entity_ids_count() == 4
-    )  # 1 climate entity; 2 sensor entities
+    assert hass.states.async_entity_ids_count() == 4  # 1 climate entity; 2 sensor entities
 
 
 @patch("custom_components.honeywell.UPDATE_LOOP_SLEEP_TIME", 0)
@@ -112,9 +109,7 @@ async def test_away_temps_migration(hass: HomeAssistant) -> None:
     }
 
 
-async def test_login_error(
-    hass: HomeAssistant, client: MagicMock, config_entry: MagicMock
-) -> None:
+async def test_login_error(hass: HomeAssistant, client: MagicMock, config_entry: MagicMock) -> None:
     """Test login errors from API."""
     client.login.side_effect = aiosomecomfort.AuthError
     await init_integration(hass, config_entry)
@@ -142,9 +137,7 @@ async def test_connection_error(
     assert config_entry.state is ConfigEntryState.SETUP_RETRY
 
 
-async def test_no_devices(
-    hass: HomeAssistant, client: MagicMock, config_entry: MagicMock
-) -> None:
+async def test_no_devices(hass: HomeAssistant, client: MagicMock, config_entry: MagicMock) -> None:
     """Test no devices from API."""
     client.locations_by_id = {}
     await init_integration(hass, config_entry)
@@ -185,9 +178,7 @@ async def test_remove_stale_device(
     assert config_entry.state is ConfigEntryState.LOADED
     assert hass.states.async_entity_ids_count() == 8
 
-    device_entries = dr.async_entries_for_config_entry(
-        device_registry, config_entry.entry_id
-    )
+    device_entries = dr.async_entries_for_config_entry(device_registry, config_entry.entry_id)
 
     device_entries_other = dr.async_entries_for_config_entry(
         device_registry, config_entry_other.entry_id
@@ -196,17 +187,10 @@ async def test_remove_stale_device(
     assert len(device_entries) == 2
     assert any((DOMAIN, 1234567) in device.identifiers for device in device_entries)
     assert any((DOMAIN, 7654321) in device.identifiers for device in device_entries)
-    assert any(
-        ("OtherDomain", 7654321) in device.identifiers for device in device_entries
-    )
+    assert any(("OtherDomain", 7654321) in device.identifiers for device in device_entries)
     assert len(device_entries_other) == 1
-    assert any(
-        ("OtherDomain", 7654321) in device.identifiers
-        for device in device_entries_other
-    )
-    assert any(
-        (DOMAIN, 7654321) in device.identifiers for device in device_entries_other
-    )
+    assert any(("OtherDomain", 7654321) in device.identifiers for device in device_entries_other)
+    assert any((DOMAIN, 7654321) in device.identifiers for device in device_entries_other)
 
     assert await hass.config_entries.async_unload(config_entry.entry_id)
     await hass.async_block_till_done()
@@ -224,21 +208,14 @@ async def test_remove_stale_device(
         hass.states.async_entity_ids_count() == 4
     )  # 1 climate entities; 2 sensor entities; 1 switch entity
 
-    device_entries = dr.async_entries_for_config_entry(
-        device_registry, config_entry.entry_id
-    )
+    device_entries = dr.async_entries_for_config_entry(device_registry, config_entry.entry_id)
     assert len(device_entries) == 1
     assert any((DOMAIN, 1234567) in device.identifiers for device in device_entries)
     assert not any((DOMAIN, 7654321) in device.identifiers for device in device_entries)
-    assert not any(
-        ("OtherDomain", 7654321) in device.identifiers for device in device_entries
-    )
+    assert not any(("OtherDomain", 7654321) in device.identifiers for device in device_entries)
 
     device_entries_other = dr.async_entries_for_config_entry(
         device_registry, config_entry_other.entry_id
     )
     assert len(device_entries_other) == 1
-    assert any(
-        ("OtherDomain", 7654321) in device.identifiers
-        for device in device_entries_other
-    )
+    assert any(("OtherDomain", 7654321) in device.identifiers for device in device_entries_other)

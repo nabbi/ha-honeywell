@@ -3,18 +3,16 @@
 import datetime
 from unittest.mock import MagicMock
 
-from aiohttp import ClientConnectionError
 import aiosomecomfort
-from freezegun.api import FrozenDateTimeFactory
 import pytest
-
+from aiohttp import ClientConnectionError
+from freezegun.api import FrozenDateTimeFactory
 from homeassistant.components.climate import (
     ATTR_FAN_MODE,
     ATTR_HVAC_MODE,
     ATTR_PRESET_MODE,
     ATTR_TARGET_TEMP_HIGH,
     ATTR_TARGET_TEMP_LOW,
-    DOMAIN as CLIMATE_DOMAIN,
     FAN_AUTO,
     FAN_DIFFUSE,
     FAN_ON,
@@ -26,13 +24,8 @@ from homeassistant.components.climate import (
     SERVICE_SET_TEMPERATURE,
     HVACMode,
 )
-from custom_components.honeywell.climate import (
-    DOMAIN,
-    MODE_PERMANENT_HOLD,
-    MODE_TEMPORARY_HOLD,
-    PRESET_HOLD,
-    RETRY,
-    SCAN_INTERVAL,
+from homeassistant.components.climate import (
+    DOMAIN as CLIMATE_DOMAIN,
 )
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -45,10 +38,18 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util.dt import utcnow
+from pytest_homeassistant_custom_component.common import async_fire_time_changed
+
+from custom_components.honeywell.climate import (
+    DOMAIN,
+    MODE_PERMANENT_HOLD,
+    MODE_TEMPORARY_HOLD,
+    PRESET_HOLD,
+    RETRY,
+    SCAN_INTERVAL,
+)
 
 from . import init_integration, reset_mock
-
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 FAN_ACTION = "fan_action"
 
@@ -261,7 +262,6 @@ async def test_service_calls_off_mode(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test controlling the entity through service calls."""
-
     device.system_mode = "off"
 
     await init_integration(hass, config_entry)
@@ -427,7 +427,6 @@ async def test_service_calls_cool_mode(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test controlling the entity through service calls."""
-
     device.system_mode = "cool"
 
     await init_integration(hass, config_entry)
@@ -646,7 +645,6 @@ async def test_service_calls_heat_mode(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test controlling the entity through service calls."""
-
     device.system_mode = "heat"
 
     await init_integration(hass, config_entry)
@@ -879,7 +877,6 @@ async def test_service_calls_auto_mode(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test controlling the entity through service calls."""
-
     device.system_mode = "auto"
 
     await init_integration(hass, config_entry)
@@ -1072,7 +1069,6 @@ async def test_async_update_errors(
     client: MagicMock,
 ) -> None:
     """Test update with errors."""
-
     await init_integration(hass, config_entry)
 
     device.refresh.side_effect = aiosomecomfort.UnauthorizedError

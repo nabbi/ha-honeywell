@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from aiosomecomfort.device import Device
-
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -100,7 +99,7 @@ class HoneywellSensor(SensorEntity):
     entity_description: HoneywellSensorEntityDescription
     _attr_has_entity_name = True
 
-    def __init__(self, device, description) -> None:
+    def __init__(self, device: Device, description: HoneywellSensorEntityDescription) -> None:
         """Initialize the outdoor temperature sensor."""
         self._device = device
         self.entity_description = description
@@ -116,4 +115,5 @@ class HoneywellSensor(SensorEntity):
     @property
     def native_value(self) -> StateType:
         """Return the state."""
-        return self.entity_description.value_fn(self._device)
+        result: StateType = self.entity_description.value_fn(self._device)
+        return result

@@ -4,18 +4,17 @@ from unittest.mock import MagicMock, patch
 
 import aiosomecomfort
 import pytest
+from homeassistant.config_entries import SOURCE_USER, ConfigEntryState
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import FlowResultType
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.honeywell.const import (
     CONF_COOL_AWAY_TEMPERATURE,
     CONF_HEAT_AWAY_TEMPERATURE,
     DOMAIN,
 )
-from homeassistant.config_entries import SOURCE_USER, ConfigEntryState
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResultType
-
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 FAKE_CONFIG = {
     "username": "fake",
@@ -70,9 +69,7 @@ async def test_create_entry(hass: HomeAssistant) -> None:
     assert result["data"] == FAKE_CONFIG
 
 
-async def test_show_option_form(
-    hass: HomeAssistant, config_entry: MockConfigEntry
-) -> None:
+async def test_show_option_form(hass: HomeAssistant, config_entry: MockConfigEntry) -> None:
     """Test that the option form is shown."""
     config_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(config_entry.entry_id)
@@ -90,9 +87,7 @@ async def test_show_option_form(
     assert result["step_id"] == "init"
 
 
-async def test_create_option_entry(
-    hass: HomeAssistant, config_entry: MockConfigEntry
-) -> None:
+async def test_create_option_entry(hass: HomeAssistant, config_entry: MockConfigEntry) -> None:
     """Test that the config entry is created."""
     config_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(config_entry.entry_id)
@@ -104,9 +99,7 @@ async def test_create_option_entry(
         "custom_components.honeywell.async_setup_entry",
         return_value=True,
     ):
-        options_form = await hass.config_entries.options.async_init(
-            config_entry.entry_id
-        )
+        options_form = await hass.config_entries.options.async_init(config_entry.entry_id)
         result = await hass.config_entries.options.async_configure(
             options_form["flow_id"],
             user_input={CONF_COOL_AWAY_TEMPERATURE: 1, CONF_HEAT_AWAY_TEMPERATURE: 2},
@@ -122,7 +115,6 @@ async def test_create_option_entry(
 
 async def test_reauth_flow(hass: HomeAssistant) -> None:
     """Test a successful reauth flow."""
-
     mock_entry = MockConfigEntry(
         domain=DOMAIN,
         data={CONF_USERNAME: "test-username", CONF_PASSWORD: "test-password"},
@@ -155,7 +147,6 @@ async def test_reauth_flow(hass: HomeAssistant) -> None:
 
 async def test_reauth_flow_auth_error(hass: HomeAssistant, client: MagicMock) -> None:
     """Test an authorization error reauth flow."""
-
     mock_entry = MockConfigEntry(
         domain=DOMAIN,
         data={CONF_USERNAME: "test-username", CONF_PASSWORD: "test-password"},
@@ -192,11 +183,8 @@ async def test_reauth_flow_auth_error(hass: HomeAssistant, client: MagicMock) ->
         TimeoutError,
     ],
 )
-async def test_reauth_flow_connnection_error(
-    hass: HomeAssistant, client: MagicMock, error
-) -> None:
+async def test_reauth_flow_connnection_error(hass: HomeAssistant, client: MagicMock, error) -> None:
     """Test a connection error reauth flow."""
-
     mock_entry = MockConfigEntry(
         domain=DOMAIN,
         data={CONF_USERNAME: "test-username", CONF_PASSWORD: "test-password"},

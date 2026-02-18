@@ -7,7 +7,6 @@ from typing import Any
 
 import aiosomecomfort
 import voluptuous as vol
-
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
@@ -39,9 +38,7 @@ class HoneywellConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    async def async_step_reauth(
-        self, entry_data: Mapping[str, Any]
-    ) -> ConfigFlowResult:
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:
         """Handle re-authentication with Honeywell."""
         return await self.async_step_reauth_confirm()
 
@@ -75,14 +72,12 @@ class HoneywellConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=self.add_suggested_values_to_schema(
-                REAUTH_SCHEMA, reauth_entry.data
-            ),
+            data_schema=self.add_suggested_values_to_schema(REAUTH_SCHEMA, reauth_entry.data),
             errors=errors,
             description_placeholders={"name": "Honeywell"},
         )
 
-    async def async_step_user(self, user_input=None) -> ConfigFlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Create config entry. Show the setup form to the user."""
         errors: dict[str, str] = {}
         if user_input is not None:
@@ -112,7 +107,7 @@ class HoneywellConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def is_valid(self, **kwargs) -> bool:
+    async def is_valid(self, **kwargs: Any) -> bool:
         """Check if login credentials are valid."""
         # Always create a new session for Honeywell to prevent cookie injection
         # issues. Even with response_url handling in aiosomecomfort 0.0.33+,
@@ -139,7 +134,7 @@ class HoneywellConfigFlow(ConfigFlow, domain=DOMAIN):
 class HoneywellOptionsFlowHandler(OptionsFlowWithReload):
     """Config flow options for Honeywell."""
 
-    async def async_step_init(self, user_input=None) -> ConfigFlowResult:
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
             return self.async_create_entry(title=DOMAIN, data=user_input)

@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from aiosomecomfort.device import Device
-
 from homeassistant.components.humidifier import (
     HumidifierDeviceClass,
     HumidifierEntity,
@@ -56,9 +55,7 @@ HUMIDIFIERS: dict[str, HoneywellHumidifierEntityDescription] = {
         key=DEHUMIDIFIER_KEY,
         translation_key=DEHUMIDIFIER_KEY,
         current_humidity=lambda device: device.current_humidity,
-        set_humidity=lambda device, humidity: device.set_dehumidifier_setpoint(
-            humidity
-        ),
+        set_humidity=lambda device, humidity: device.set_dehumidifier_setpoint(humidity),
         min_humidity=lambda device: device.dehumidifier_lower_limit,
         max_humidity=lambda device: device.dehumidifier_upper_limit,
         current_set_humidity=lambda device: device.dehumidifier_setpoint,
@@ -93,9 +90,7 @@ class HoneywellHumidifier(HumidifierEntity):
     entity_description: HoneywellHumidifierEntityDescription
     _attr_has_entity_name = True
 
-    def __init__(
-        self, device: Device, description: HoneywellHumidifierEntityDescription
-    ) -> None:
+    def __init__(self, device: Device, description: HoneywellHumidifierEntityDescription) -> None:
         """Initialize the (De)Humidifier."""
         self._device = device
         self.entity_description = description
@@ -111,17 +106,19 @@ class HoneywellHumidifier(HumidifierEntity):
     @property
     def is_on(self) -> bool:
         """Return the device is on or off."""
-        return self.entity_description.mode(self._device) != 0
+        return bool(self.entity_description.mode(self._device) != 0)
 
     @property
     def target_humidity(self) -> int | None:
         """Return the humidity we try to reach."""
-        return self.entity_description.current_set_humidity(self._device)
+        value: int | None = self.entity_description.current_set_humidity(self._device)
+        return value
 
     @property
     def current_humidity(self) -> int | None:
         """Return the current humidity."""
-        return self.entity_description.current_humidity(self._device)
+        value: int | None = self.entity_description.current_humidity(self._device)
+        return value
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the device on."""

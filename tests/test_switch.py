@@ -2,17 +2,15 @@
 
 from unittest.mock import MagicMock
 
-from aiosomecomfort.exceptions import SomeComfortError
 import pytest
-
+from aiosomecomfort.exceptions import SomeComfortError
 from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
 from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_OFF, SERVICE_TURN_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from . import init_integration
-
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 
 async def test_emheat_switch(
@@ -21,7 +19,6 @@ async def test_emheat_switch(
     device: MagicMock,
 ) -> None:
     """Test emergency heat switch."""
-
     await init_integration(hass, config_entry)
     entity_id = f"switch.{device.name}_emergency_heat"
     await hass.services.async_call(

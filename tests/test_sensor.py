@@ -1,11 +1,9 @@
 """Test honeywell sensor."""
 
+import pytest
 from aiosomecomfort.device import Device
 from aiosomecomfort.location import Location
-import pytest
-
 from homeassistant.core import HomeAssistant
-
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 
@@ -20,9 +18,7 @@ async def test_outdoor_sensor(
 ) -> None:
     """Test outdoor temperature sensor."""
     device_with_outdoor_sensor.temperature_unit = unit
-    location.devices_by_id[device_with_outdoor_sensor.deviceid] = (
-        device_with_outdoor_sensor
-    )
+    location.devices_by_id[device_with_outdoor_sensor.deviceid] = device_with_outdoor_sensor
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()

@@ -2,9 +2,8 @@
 
 from dataclasses import dataclass
 
-from aiohttp.client_exceptions import ClientConnectionError
 import aiosomecomfort
-
+from aiohttp.client_exceptions import ClientConnectionError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, callback
@@ -22,16 +21,12 @@ type HoneywellConfigEntry = ConfigEntry[HoneywellData]
 
 
 @callback
-def _async_migrate_data_to_options(
-    hass: HomeAssistant, config_entry: HoneywellConfigEntry
-) -> None:
+def _async_migrate_data_to_options(hass: HomeAssistant, config_entry: HoneywellConfigEntry) -> None:
     if not MIGRATE_OPTIONS_KEYS.intersection(config_entry.data):
         return
     hass.config_entries.async_update_entry(
         config_entry,
-        data={
-            k: v for k, v in config_entry.data.items() if k not in MIGRATE_OPTIONS_KEYS
-        },
+        data={k: v for k, v in config_entry.data.items() if k not in MIGRATE_OPTIONS_KEYS},
         options={
             **config_entry.options,
             **{k: config_entry.data.get(k) for k in MIGRATE_OPTIONS_KEYS},
@@ -39,9 +34,7 @@ def _async_migrate_data_to_options(
     )
 
 
-async def async_setup_entry(
-    hass: HomeAssistant, config_entry: HoneywellConfigEntry
-) -> bool:
+async def async_setup_entry(hass: HomeAssistant, config_entry: HoneywellConfigEntry) -> bool:
     """Set up the Honeywell thermostat."""
     _async_migrate_data_to_options(hass, config_entry)
 
@@ -86,9 +79,7 @@ async def async_setup_entry(
     return True
 
 
-async def async_unload_entry(
-    hass: HomeAssistant, config_entry: HoneywellConfigEntry
-) -> bool:
+async def async_unload_entry(hass: HomeAssistant, config_entry: HoneywellConfigEntry) -> bool:
     """Unload the config and platforms."""
     return await hass.config_entries.async_unload_platforms(config_entry, PLATFORMS)
 

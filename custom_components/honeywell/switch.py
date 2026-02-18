@@ -6,7 +6,6 @@ from typing import Any
 
 from aiosomecomfort import SomeComfortError
 from aiosomecomfort.device import Device as SomeComfortDevice
-
 from homeassistant.components.switch import (
     SwitchDeviceClass,
     SwitchEntity,
@@ -91,4 +90,4 @@ class HoneywellSwitch(SwitchEntity):
     @property
     def is_on(self) -> bool:
         """Return true if Emergency heat is enabled."""
-        return self._device.system_mode == "emheat"
+        return bool(self._device.system_mode == "emheat")
