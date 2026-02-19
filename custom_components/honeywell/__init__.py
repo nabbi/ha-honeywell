@@ -1,11 +1,13 @@
 """Support for Honeywell (US) Total Connect Comfort climate systems."""
 
+import asyncio
+
 import aiosomecomfort
 from aiohttp.client_exceptions import ClientConnectionError
 from aiosomecomfort import APIRateLimited
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .const import _LOGGER, CONF_COOL_AWAY_TEMPERATURE, CONF_HEAT_AWAY_TEMPERATURE
@@ -14,6 +16,8 @@ from .coordinator import HoneywellConfigEntry, HoneywellCoordinator, HoneywellDa
 __all__ = ["HoneywellConfigEntry", "HoneywellData"]
 
 PLATFORMS = [Platform.CLIMATE, Platform.HUMIDIFIER, Platform.SENSOR, Platform.SWITCH]
+
+LOGIN_TIMEOUT = 30
 
 MIGRATE_OPTIONS_KEYS = {CONF_COOL_AWAY_TEMPERATURE, CONF_HEAT_AWAY_TEMPERATURE}
 
@@ -46,11 +50,23 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: HoneywellConfigEn
     session = async_create_clientsession(hass)
     client = aiosomecomfort.AIOSomeComfort(username, password, session=session)
     try:
-        await client.login()
-        await client.discover()
+        async with asyncio.timeout(LOGIN_TIMEOUT):
+            await client.login()
+            await client.discover()
 
-    except aiosomecomfort.device.AuthError as ex:
-        raise ConfigEntryAuthFailed("Incorrect Password") from ex
+    except aiosomecomfort.device.AuthError:
+        # Honeywell sometimes rejects valid credentials under load.
+        # Retry once; if still failing, schedule retry with backoff
+        # instead of triggering reauth (which forces the user to
+        # re-enter the same working credentials).
+        try:
+            async with asyncio.timeout(LOGIN_TIMEOUT):
+                await client.login()
+                await client.discover()
+        except aiosomecomfort.device.AuthError as ex:
+            raise ConfigEntryNotReady(
+                "Login failed twice, will retry (credentials may be temporarily blocked)"
+            ) from ex
 
     except APIRateLimited as ex:
         raise ConfigEntryNotReady("API rate limited, will retry with backoff") from ex

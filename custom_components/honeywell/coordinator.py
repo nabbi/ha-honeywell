@@ -90,8 +90,14 @@ class HoneywellCoordinator(DataUpdateCoordinator[dict[int, SomeComfortDevice]]):
             try:
                 await self.client.login()
                 await self._async_refresh_devices()
-            except AuthError as ex:
-                raise ConfigEntryAuthFailed("Incorrect credentials") from ex
+            except AuthError:
+                # Retry login once — Honeywell sometimes rejects valid
+                # credentials under load.
+                try:
+                    await self.client.login()
+                    await self._async_refresh_devices()
+                except AuthError as ex:
+                    raise ConfigEntryAuthFailed("Incorrect credentials") from ex
             except _TRANSIENT_ERRORS as ex:
                 return self._handle_transient_error(f"Failed to refresh after re-login: {ex}", ex)
         except _TRANSIENT_ERRORS as err:

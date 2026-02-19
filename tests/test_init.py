@@ -1,6 +1,7 @@
 """Test honeywell setup process."""
 
-from unittest.mock import MagicMock, create_autospec
+import asyncio
+from unittest.mock import AsyncMock, MagicMock, create_autospec
 
 import aiosomecomfort
 import pytest
@@ -109,10 +110,24 @@ async def test_away_temps_migration(hass: HomeAssistant) -> None:
 
 
 async def test_login_error(hass: HomeAssistant, client: MagicMock, config_entry: MagicMock) -> None:
-    """Test login errors from API."""
+    """Test persistent login errors trigger retry (not immediate reauth)."""
     client.login.side_effect = aiosomecomfort.AuthError
     await init_integration(hass, config_entry)
-    assert config_entry.state is ConfigEntryState.SETUP_ERROR
+    assert config_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_login_transient_auth_error(
+    hass: HomeAssistant,
+    client: MagicMock,
+    config_entry: MockConfigEntry,
+) -> None:
+    """Test transient auth error recovers on retry within setup."""
+    # First login fails, retry succeeds
+    client.login.side_effect = [aiosomecomfort.AuthError, True]
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert config_entry.state is ConfigEntryState.LOADED
 
 
 @pytest.mark.parametrize(
@@ -144,6 +159,23 @@ async def test_rate_limited(
     """Test API rate limited triggers retry."""
     client.login.side_effect = APIRateLimited
     await init_integration(hass, config_entry)
+    assert config_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_login_timeout(
+    hass: HomeAssistant,
+    client: MagicMock,
+    config_entry: MagicMock,
+) -> None:
+    """Test login that hangs is bounded by timeout and triggers retry."""
+
+    async def _hang() -> None:
+        await asyncio.sleep(3600)
+
+    client.login = AsyncMock(side_effect=_hang)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr("custom_components.honeywell.LOGIN_TIMEOUT", 0)
+        await init_integration(hass, config_entry)
     assert config_entry.state is ConfigEntryState.SETUP_RETRY
 
 

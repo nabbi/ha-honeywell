@@ -135,6 +135,50 @@ async def test_coordinator_unexpected_response_returns_cached_data(
     assert hass.states.get(entity_id).state == "off"
 
 
+async def test_coordinator_relogin_transient_auth_error(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MockConfigEntry,
+    client: MagicMock,
+) -> None:
+    """Test coordinator retries login on transient auth error and recovers."""
+    await init_integration(hass, config_entry)
+
+    entity_id = f"climate.{device.name}"
+    assert hass.states.get(entity_id).state == "off"
+
+    # Refresh triggers UnauthorizedError, first re-login fails with AuthError,
+    # retry re-login succeeds and refresh succeeds
+    device.refresh.side_effect = [aiosomecomfort.UnauthorizedError, None]
+    client.login.side_effect = [aiosomecomfort.AuthError, True]
+    async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(entity_id).state == "off"
+
+
+async def test_coordinator_relogin_persistent_auth_error(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MockConfigEntry,
+    client: MagicMock,
+) -> None:
+    """Test coordinator triggers reauth after two consecutive auth failures."""
+    await init_integration(hass, config_entry)
+
+    entity_id = f"climate.{device.name}"
+    assert hass.states.get(entity_id).state == "off"
+
+    # Refresh triggers UnauthorizedError, both re-login attempts fail
+    device.refresh.side_effect = aiosomecomfort.UnauthorizedError
+    client.login.side_effect = aiosomecomfort.AuthError
+    async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
+    await hass.async_block_till_done()
+
+    # Persistent auth failure triggers reauth flow
+    assert any(config_entry.async_get_active_flows(hass, {"reauth"}))
+
+
 async def test_honeywelldata_client_property(
     hass: HomeAssistant,
     device: MagicMock,
