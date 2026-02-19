@@ -50,14 +50,17 @@ custom integration's error handling, assuming 3,211 active installations averagi
 
 ### Steady-state (no errors)
 
-Both versions are identical — no change in API load.
+The original core integration uses **per-entity polling at 30 s** — each climate entity
+independently calls `device.refresh()`. This integration uses a **DataUpdateCoordinator
+at 60 s** — one poll per installation refreshes all devices in a single cycle.
 
-| Metric | Value |
-|--------|-------|
-| Poll interval | 60 s |
-| Requests per poll | 1–2 per device (CheckDataSession + conditional GetData) |
-| Polls/min (fleet) | ~53 |
-| HTTP requests/min (fleet) | ~120–160 |
+| Metric | Original (per-entity, 30 s) | New (coordinator, 60 s) |
+|--------|-----------------------------|-------------------------|
+| Poll interval | 30 s | 60 s |
+| Poll unit | Per climate entity | Per installation |
+| Polls/min (fleet) | 3,211 × 1.5 devices × 2/min = **~9,634** | 3,211 × 1/min = **~53** |
+| HTTP requests/min (fleet) | ~9,634–19,267 | ~80–160 |
+| **Reduction** | | **~99%** |
 
 ### During a Honeywell outage
 
@@ -67,12 +70,14 @@ The critical difference is what happens when the API returns errors.
 
 | Scenario | Behavior | API calls per installation |
 |----------|----------|--------------------------|
-| Timeout / connection error | `UpdateFailed` → entities unavailable, keeps polling at 60 s | 1 failing request/min |
+| Timeout / connection error | Entity goes unavailable after 3 retries, keeps polling at 30 s per entity | ~3 failing requests/min per device |
 | 401 → re-login → AuthError | `ConfigEntryAuthFailed` → **reauth flow triggered, polling stops** | 2 requests then silence |
 | 401 → re-login → null cookie | `ConfigEntryAuthFailed` → **reauth flow triggered, polling stops** | 2 requests then silence |
 
-During an extended outage with auth errors, most installations enter reauth state within
-1–2 poll cycles. Polling stops. **Fleet load drops to near zero.**
+During an extended outage with connection errors, each entity keeps polling at 30 s
+(~9,634 failing requests/min fleet-wide). With auth errors, most installations enter
+reauth state within 1–2 poll cycles and polling stops. **Fleet load drops to near zero
+for auth errors, but stays high for connection errors.**
 
 **Recovery**: all 3,211 users must manually re-enter credentials in the HA UI. As users
 discover the problem and re-authenticate (often shortly after the API comes back up),
@@ -111,17 +116,18 @@ intervention required. No burst.
 
 | Phase | Original (fleet) | New (fleet) |
 |-------|------------------|-------------|
-| Steady-state | ~120–160 req/min | ~120–160 req/min (identical) |
-| Outage (first 3 min) | ~53 req/min + logins, then drops to ~0 | ~106 req/min + login retries |
-| Outage (sustained) | ~0 (most in reauth state) | ~53 req/min (rate limiter blocks logins) |
+| Steady-state | **~9,634–19,267 req/min** (per-entity, 30 s) | **~80–160 req/min** (coordinator, 60 s) |
+| Outage (connection errors) | ~9,634 failing req/min | ~53 failing req/min |
+| Outage (auth errors) | drops to ~0 (reauth stops polling) | ~53 req/min (rate limiter blocks logins) |
 | Recovery | **~12,844 burst** (thundering herd) | **0 burst** (transparent recovery) |
 | User intervention | Required (manual reauth) | Not required |
 
-**Conclusion**: the new logic trades slightly higher sustained load during outages
-(~53 failing polls/min vs near-zero) for eliminating the thundering herd on recovery
-(~12,844 burst → 0) and removing the need for 3,211 users to manually re-authenticate.
-For the Honeywell API, predictable low-rate failures are far less damaging than a
-concentrated burst of thousands of login+discover+refresh sequences hitting
+**Conclusion**: the coordinator migration alone reduces steady-state API load by ~99%
+(~9,634 → ~53 polls/min). During outages, the new logic maintains ~53 failing polls/min
+instead of either ~9,634 (connection errors) or dropping to zero then bursting ~12,844
+calls on recovery (auth errors). For the Honeywell API, a predictable 53 req/min is far
+less damaging than either 9,634 req/min of failing polls or a concentrated thundering
+herd of login+discover+refresh sequences from 3,211 installations recovering
 simultaneously.
 
 ## Platforms
