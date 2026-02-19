@@ -179,6 +179,53 @@ async def test_coordinator_relogin_persistent_auth_error(
     assert any(config_entry.async_get_active_flows(hass, {"reauth"}))
 
 
+async def test_coordinator_null_cookie_returns_cached_data(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MockConfigEntry,
+    client: MagicMock,
+) -> None:
+    """Test null cookie auth error is treated as transient, not credential failure."""
+    await init_integration(hass, config_entry)
+
+    entity_id = f"climate.{device.name}"
+    assert hass.states.get(entity_id).state == "off"
+
+    # Refresh triggers UnauthorizedError, both re-login attempts fail
+    # with null cookie errors (site is down, not bad credentials)
+    device.refresh.side_effect = aiosomecomfort.UnauthorizedError
+    client.login.side_effect = aiosomecomfort.AuthError("Null cookie connection error 200")
+    async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
+    await hass.async_block_till_done()
+
+    # Should return cached data, NOT trigger reauth
+    assert hass.states.get(entity_id).state == "off"
+    assert not any(config_entry.async_get_active_flows(hass, {"reauth"}))
+
+
+async def test_coordinator_relogin_retry_transient_error(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MockConfigEntry,
+    client: MagicMock,
+) -> None:
+    """Test transient error during login retry returns cached data."""
+    await init_integration(hass, config_entry)
+
+    entity_id = f"climate.{device.name}"
+    assert hass.states.get(entity_id).state == "off"
+
+    # Refresh triggers UnauthorizedError, first re-login fails with AuthError,
+    # retry re-login hits APIRateLimited -> should return cached data
+    device.refresh.side_effect = aiosomecomfort.UnauthorizedError
+    client.login.side_effect = [aiosomecomfort.AuthError, aiosomecomfort.APIRateLimited]
+    async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(entity_id).state == "off"
+    assert not any(config_entry.async_get_active_flows(hass, {"reauth"}))
+
+
 async def test_honeywelldata_client_property(
     hass: HomeAssistant,
     device: MagicMock,

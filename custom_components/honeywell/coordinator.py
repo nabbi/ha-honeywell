@@ -97,7 +97,17 @@ class HoneywellCoordinator(DataUpdateCoordinator[dict[int, SomeComfortDevice]]):
                     await self.client.login()
                     await self._async_refresh_devices()
                 except AuthError as ex:
+                    # Null cookie means the site is down, not bad credentials.
+                    # Treat as transient to avoid forcing reauth with valid creds.
+                    if "Null cookie" in str(ex):
+                        return self._handle_transient_error(
+                            f"Login failed (site may be down): {ex}", ex
+                        )
                     raise ConfigEntryAuthFailed("Incorrect credentials") from ex
+                except _TRANSIENT_ERRORS as ex:
+                    return self._handle_transient_error(
+                        f"Failed to refresh after re-login retry: {ex}", ex
+                    )
             except _TRANSIENT_ERRORS as ex:
                 return self._handle_transient_error(f"Failed to refresh after re-login: {ex}", ex)
         except _TRANSIENT_ERRORS as err:
