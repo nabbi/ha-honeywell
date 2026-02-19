@@ -35,6 +35,14 @@ _TRANSIENT_ERRORS = (
     ClientConnectionError,
 )
 
+
+def _fmt_error(err: Exception) -> str:
+    """Format an exception with its type name, useful when str(err) is empty."""
+    msg = str(err)
+    name = type(err).__name__
+    return f"{name}: {msg}" if msg else name
+
+
 type HoneywellConfigEntry = ConfigEntry[HoneywellData]
 
 
@@ -101,19 +109,21 @@ class HoneywellCoordinator(DataUpdateCoordinator[dict[int, SomeComfortDevice]]):
                     # Treat as transient to avoid forcing reauth with valid creds.
                     if "Null cookie" in str(ex):
                         return self._handle_transient_error(
-                            f"Login failed (site may be down): {ex}", ex
+                            f"Login failed (site may be down): {_fmt_error(ex)}", ex
                         )
                     raise ConfigEntryAuthFailed("Incorrect credentials") from ex
                 except _TRANSIENT_ERRORS as ex:
                     return self._handle_transient_error(
-                        f"Failed to refresh after re-login retry: {ex}", ex
+                        f"Failed to refresh after re-login retry: {_fmt_error(ex)}", ex
                     )
             except _TRANSIENT_ERRORS as ex:
-                return self._handle_transient_error(f"Failed to refresh after re-login: {ex}", ex)
+                return self._handle_transient_error(
+                    f"Failed to refresh after re-login: {_fmt_error(ex)}", ex
+                )
         except _TRANSIENT_ERRORS as err:
-            return self._handle_transient_error(f"Connection failed: {err}", err)
+            return self._handle_transient_error(f"Connection failed: {_fmt_error(err)}", err)
         except UnexpectedResponse as err:
-            return self._handle_transient_error(f"Unexpected API response: {err}", err)
+            return self._handle_transient_error(f"Unexpected API response: {_fmt_error(err)}", err)
 
         return self.devices
 
