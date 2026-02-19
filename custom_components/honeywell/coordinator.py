@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import timedelta
 
@@ -82,6 +83,7 @@ class HoneywellCoordinator(DataUpdateCoordinator[dict[int, SomeComfortDevice]]):
         """Initialize."""
         self.client = client
         self.devices = devices
+        self._skip_next_refresh = False
         super().__init__(
             hass,
             _LOGGER,
@@ -92,6 +94,10 @@ class HoneywellCoordinator(DataUpdateCoordinator[dict[int, SomeComfortDevice]]):
 
     async def _async_update_data(self) -> dict[int, SomeComfortDevice]:
         """Fetch data from Honeywell."""
+        if self._skip_next_refresh:
+            self._skip_next_refresh = False
+            return self.devices
+
         try:
             await self._async_refresh_devices()
         except UnauthorizedError:
@@ -128,9 +134,15 @@ class HoneywellCoordinator(DataUpdateCoordinator[dict[int, SomeComfortDevice]]):
         return self.devices
 
     async def _async_refresh_devices(self) -> None:
-        """Refresh all devices."""
-        for device in self.devices.values():
-            await device.refresh()
+        """Refresh all devices in parallel."""
+        if not self.devices:
+            return
+        loop = asyncio.get_running_loop()
+        tasks = [
+            asyncio.Task(device.refresh(), loop=loop, eager_start=True)
+            for device in self.devices.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _handle_transient_error(self, msg: str, err: Exception) -> dict[int, SomeComfortDevice]:
         """Return stale data on transient errors, or raise if no prior data."""

@@ -41,6 +41,8 @@ Resilience and error handling improvements over the built-in `homeassistant.comp
 - **Login retry on transient auth errors** — Honeywell sometimes rejects valid credentials under load; setup retries once before backing off with `ConfigEntryNotReady`, avoiding unnecessary reauth prompts
 - **Login timeout** — 30-second timeout on login calls prevents a hung Honeywell API from blocking HA startup
 - **APIRateLimited during setup** — raises `ConfigEntryNotReady` with backoff instead of failing setup entirely
+- **Parallel device refresh** — multi-device setups refresh all devices concurrently via `asyncio.gather` instead of sequentially, reducing wall-clock time from O(N) to O(1)
+- **Eliminated startup double-fetch** — `discover()` already refreshes all devices; the first coordinator cycle is skipped to avoid 2 redundant HTTP calls per device on every HA restart
 
 ## API Load Impact Analysis (3,211 active installations)
 

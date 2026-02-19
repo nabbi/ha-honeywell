@@ -92,6 +92,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: HoneywellConfigEn
         return False
 
     coordinator = HoneywellCoordinator(hass, config_entry, client, devices)
+    coordinator._skip_next_refresh = True
     await coordinator.async_config_entry_first_refresh()
 
     config_entry.runtime_data = HoneywellData(coordinator)
