@@ -1,0 +1,776 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.2.2 Chrome/134.0.6998.178 Electron/35.1.2 Safari/537.36" version="26.2.2" pages="5">
+  <diagram id="architecture-overview" name="Architecture Overview">
+    <mxGraphModel dx="1739" dy="1463" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Honeywell Total Connect Comfort — Integration Architecture" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="200" y="20" width="1000" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="frontend-group" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="340" y="80" width="720" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="frontend-label" value="&lt;b&gt;Home Assistant Frontend&lt;/b&gt;&lt;br&gt;Lovelace UI · Dashboards · Automations · Scripts" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="340" y="80" width="720" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-fe-core" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#666666;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="frontend-group" target="ha-core-group" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ha-core-group" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="140" y="180" width="1120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ha-core-title" value="&lt;b&gt;Home Assistant Core&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="155" y="185" width="200" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="state-machine" value="&lt;b&gt;State Machine&lt;/b&gt;&lt;br&gt;Entity Registry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="160" y="215" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="service-handler" value="&lt;b&gt;Service Handler&lt;/b&gt;&lt;br&gt;climate.set_temperature, etc." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="340" y="215" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="device-registry" value="&lt;b&gt;Device Registry&lt;/b&gt;&lt;br&gt;Device tracking &amp; cleanup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="590" y="215" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="config-entries" value="&lt;b&gt;Config Entries&lt;/b&gt;&lt;br&gt;Setup · Unload · Reauth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="810" y="215" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="coordinator-fw" value="&lt;b&gt;DataUpdateCoordinator&lt;/b&gt;&lt;br&gt;Framework" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="1030" y="215" width="210" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-core-integ" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="ha-core-group" target="integration-group" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="integration-group" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="140" y="320" width="1120" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="integ-title" value="&lt;b&gt;custom_components/honeywell/&lt;/b&gt;  (HACS Custom Integration · domain: honeywell · iot_class: cloud_polling)" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="155" y="325" width="700" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="config-flow" value="&lt;b&gt;config_flow.py&lt;/b&gt;&lt;br&gt;&lt;hr size=&quot;1&quot;&gt;ConfigFlow (user step)&lt;br&gt;Reauth flow&lt;br&gt;OptionsFlow (away temps)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="240" y="370" width="190" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="init-py" value="&lt;b&gt;__init__.py&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;async_setup_entry()&lt;br&gt;• Create AIOSomeComfort client&lt;br&gt;• Login &amp; discover devices&lt;br&gt;• Create coordinator&lt;br&gt;• Forward to 4 platforms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="230" y="490.5" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="coordinator" value="&lt;b&gt;coordinator.py&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;b&gt;HoneywellCoordinator&lt;/b&gt;&lt;br&gt;(DataUpdateCoordinator)&lt;br&gt;&lt;br&gt;SCAN_INTERVAL = 60s&lt;br&gt;_async_update_data():&lt;br&gt;  → device.refresh() (all)&lt;br&gt;  → re-login on UnauthorizedError&lt;br&gt;&lt;br&gt;&lt;b&gt;HoneywellData&lt;/b&gt; (runtime_data wrapper)&lt;br&gt;&lt;b&gt;HoneywellConfigEntry&lt;/b&gt; (type alias)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="550" y="402.5" width="260" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="entities-group" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f7f0;strokeColor=#82b366;dashed=1;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="880" y="355" width="360" height="295" as="geometry" />
+        </mxCell>
+        <mxCell id="entities-title" value="&lt;b&gt;Entity Platforms&lt;/b&gt; (all extend CoordinatorEntity)" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="885" y="358" width="340" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="climate-entity" value="&lt;b&gt;climate.py&lt;/b&gt;&lt;br&gt;&lt;hr size=&quot;1&quot;&gt;HoneywellUSThermostat&lt;br&gt;(1 per device)&lt;br&gt;&lt;br&gt;HVAC modes · Fan · Presets&lt;br&gt;Temperature control&lt;br&gt;Hold/Away logic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="895" y="388" width="160" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="sensor-entity" value="&lt;b&gt;sensor.py&lt;/b&gt;&lt;br&gt;&lt;hr size=&quot;1&quot;&gt;HoneywellSensor&lt;br&gt;(up to 4 per device)&lt;br&gt;&lt;br&gt;indoor/outdoor temp&lt;br&gt;indoor/outdoor humidity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="900" y="518" width="150" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="humidifier-entity" value="&lt;b&gt;humidifier.py&lt;/b&gt;&lt;br&gt;&lt;hr size=&quot;1&quot;&gt;HoneywellHumidifier&lt;br&gt;(0-2 per device)&lt;br&gt;humidifier + dehumidifier" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="1070" y="405.5" width="160" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="switch-entity" value="&lt;b&gt;switch.py&lt;/b&gt;&lt;br&gt;&lt;hr size=&quot;1&quot;&gt;HoneywellSwitch&lt;br&gt;(0-1 per device)&lt;br&gt;Emergency heat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=center;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="1070" y="530" width="150" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-init-coord" value="creates" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=1.5;endArrow=block;endFill=1;fontSize=10;fontColor=#999999;" parent="1" source="init-py" target="coordinator" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-coord-sensor" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=1.5;endArrow=block;endFill=1;" parent="1" source="coordinator" target="sensor-entity" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-coord-climate" value="notifies" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=1.5;endArrow=block;endFill=1;fontSize=10;fontColor=#999999;" parent="1" source="coordinator" target="climate-entity" edge="1">
+          <mxGeometry x="-0.6846" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="library-group" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="260" y="720" width="880" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="library-label" value="&lt;b&gt;AIOSomeComfort&lt;/b&gt; (aiosomecomfort==0.0.35)&lt;br&gt;&lt;hr size=&quot;1&quot;&gt;AIOSomeComfort client · login() · discover() · Location · Device&lt;br&gt;device.refresh() · set_system_mode() · set_setpoint_heat/cool() · set_hold_heat/cool() · set_fan_mode()&lt;br&gt;set_humidifier_setpoint/auto/off() · set_dehumidifier_setpoint/auto/off()" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="260" y="720" width="880" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-integ-lib" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="integration-group" target="library-group" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cloud-group" value="" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="390" y="865" width="620" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="cloud-label" value="&lt;b&gt;Honeywell Total Connect Comfort API&lt;/b&gt;&lt;br&gt;mytotalconnectcomfort.com · REST · JWT auth + cookie fallback" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="430" y="885" width="540" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-lib-cloud" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;endArrow=block;endFill=1;fontSize=10;fontColor=#b85450;" parent="1" source="library-group" target="cloud-group" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="other-files" value="&lt;b&gt;Also:&lt;/b&gt; const.py · strings.json · manifest.json · diagnostics.py" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#666666;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="150" y="628" width="420" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#cccccc;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="20" y="860" width="320" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="30" y="865" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-blue" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="35" y="890" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-blue-t" value="HA Core Framework" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="60" y="886" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-green" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="35" y="910" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-green-t" value="Honeywell Integration" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="60" y="906" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-yellow" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="35" y="930" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-yellow-t" value="Coordinator / AIOSomeComfort" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="60" y="926" width="180" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-red" value="" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="195" y="888" width="30" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-red-t" value="External Cloud API" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="230" y="884" width="120" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="data-flow" name="Coordinator Refresh Flow">
+    <mxGraphModel dx="1739" dy="1463" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="df-title" value="Coordinator Refresh Cycle (every 60s)" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="250" y="20" width="800" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="df-timer" value="&lt;b&gt;Timer fires&lt;/b&gt;&lt;br&gt;(every 60s)" style="shape=mxgraph.flowchart.start_2;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="540" y="80" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-update" value="&lt;b&gt;_async_update_data()&lt;/b&gt;&lt;br&gt;Loop all devices" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="540" y="170" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a1" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="df-timer" target="df-update" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-refresh" value="&lt;b&gt;device.refresh()&lt;/b&gt;&lt;br&gt;HTTP GET → Honeywell API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="540" y="260" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a2" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="df-update" target="df-refresh" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-decision" value="Success?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="590" y="350" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a3" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="df-refresh" target="df-decision" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-return" value="&lt;b&gt;Return devices dict&lt;/b&gt;&lt;br&gt;coordinator.data updated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="540" y="480" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a4" value="Yes" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;fontSize=11;fontStyle=1;fontColor=#82b366;" parent="1" source="df-decision" target="df-return" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-notify" value="&lt;b&gt;Notify all CoordinatorEntities&lt;/b&gt;&lt;br&gt;_handle_coordinator_update() → async_write_ha_state()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="480" y="570" width="340" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a5" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="df-return" target="df-notify" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-climate-e" value="climate.*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="370" y="680" width="100" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="df-sensor-e" value="sensor.*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="490" y="680" width="100" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="df-humid-e" value="humidifier.*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="610" y="680" width="100" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="df-switch-e" value="switch.*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="730" y="680" width="100" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a6a" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="df-notify" target="df-climate-e" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a6b" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="df-notify" target="df-sensor-e" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a6c" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="df-notify" target="df-humid-e" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a6d" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="df-notify" target="df-switch-e" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-state" value="&lt;b&gt;HA State Machine Updated&lt;/b&gt;&lt;br&gt;UI refreshes · Automations trigger" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="370" y="760" width="340" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-a7" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="df-sensor-e" target="df-state" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-unauth" value="&lt;b&gt;UnauthorizedError&lt;/b&gt;&lt;br&gt;(token expired)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="970" y="380" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae1" value="" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;strokeColor=#b85450;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="df-decision" target="df-unauth" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae1-label" value="No" style="text;html=1;fontSize=11;fontStyle=1;fontColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="720" y="370" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="df-relogin" value="&lt;b&gt;client.login()&lt;/b&gt;&lt;br&gt;Re-authenticate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="970" y="460" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae2" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;strokeColor=#d6b656;" parent="1" source="df-unauth" target="df-relogin" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-relogin-dec" value="Login OK?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="1000" y="540" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae3" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;" parent="1" source="df-relogin" target="df-relogin-dec" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-retry" value="&lt;b&gt;Retry refresh&lt;/b&gt;&lt;br&gt;all devices" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="900" y="645" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae4" value="Yes" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;fontColor=#82b366;fontStyle=1;fontSize=10;" parent="1" source="df-relogin-dec" target="df-retry" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-authfail" value="&lt;b&gt;ConfigEntryAuthFailed&lt;/b&gt;&lt;br&gt;→ triggers reauth flow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="1150" y="640" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae5" value="AuthError" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;fontColor=#b85450;fontStyle=1;fontSize=10;strokeColor=#b85450;" parent="1" source="df-relogin-dec" target="df-authfail" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-transient" value="&lt;b&gt;Transient Errors&lt;/b&gt;&lt;br&gt;Timeout · ConnectionError&lt;br&gt;APIRateLimited · UnexpectedResponse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="130" y="370" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae-trans" value="" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;strokeColor=#b85450;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="df-decision" target="df-transient" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-updatefailed" value="&lt;b&gt;raise UpdateFailed&lt;/b&gt;&lt;br&gt;Coordinator marks entities unavailable&lt;br&gt;Automatic retry on next interval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="100" y="485" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="df-ae-uf" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;strokeColor=#9673a6;" parent="1" source="df-transient" target="df-updatefailed" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="df-recovery" value="On next successful refresh:&lt;br&gt;entities automatically become &lt;b&gt;available&lt;/b&gt; again" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#666666;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="100" y="555" width="300" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="service-call-flow" name="Service Call Flow">
+    <mxGraphModel dx="1439" dy="1210" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="sc-title" value="Service Call Flow (User Actions)" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="300" y="20" width="800" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-user" value="&lt;b&gt;User Action&lt;/b&gt;&lt;br&gt;HA UI button · Automation · Script · Service call" style="shape=mxgraph.flowchart.start_2;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="500" y="80" width="400" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-service" value="&lt;b&gt;HA Service Handler&lt;/b&gt;&lt;br&gt;Dispatches to entity method" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="550" y="170" width="300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-a1" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="sc-user" target="sc-service" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-entity" value="&lt;b&gt;Entity Service Method&lt;/b&gt;&lt;br&gt;(e.g. async_set_temperature, async_set_fan_mode, async_set_preset_mode)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="490" y="260" width="420" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-a2" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="sc-service" target="sc-entity" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-aio" value="&lt;b&gt;AIOSomeComfort Device Method&lt;/b&gt;&lt;br&gt;device.set_setpoint_heat(temp) · device.set_system_mode(mode) · etc." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="480" y="355" width="440" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-a3" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="sc-entity" target="sc-aio" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-api" value="&lt;b&gt;HTTP POST → Honeywell Cloud API&lt;/b&gt;&lt;br&gt;Device state updated on cloud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="530" y="450" width="340" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-a4" style="strokeWidth=2;endArrow=block;endFill=1;rounded=1;" parent="1" source="sc-aio" target="sc-api" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-divider-label" value="&lt;b&gt;State Update Paths&lt;/b&gt; (after API call returns)" style="text;html=1;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="400" y="530" width="600" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-immediate-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;dashed=1;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="140" y="575" width="420" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-immediate-title" value="&lt;b&gt;Path A: Immediate State Write&lt;/b&gt;&lt;br&gt;(for methods that modify internal entity state)" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="150" y="580" width="400" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-im-1" value="Entity modifies &lt;b&gt;self._away&lt;/b&gt;&lt;br&gt;(internal state flag)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="220" y="625" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-im-2" value="&lt;b&gt;self.async_write_ha_state()&lt;/b&gt;&lt;br&gt;Pushes state to HA immediately" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="220" y="685" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-im-a1" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;" parent="1" source="sc-im-1" target="sc-im-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-im-note" value="&lt;b&gt;Required because should_poll=False&lt;/b&gt;&lt;br&gt;HA does NOT auto-write state for&lt;br&gt;CoordinatorEntity after service calls" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#666666;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="175" y="735" width="350" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-deferred-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7e6;strokeColor=#d6b656;dashed=1;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="620" y="575" width="420" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-deferred-title" value="&lt;b&gt;Path B: Deferred via Coordinator&lt;/b&gt;&lt;br&gt;(for API-only changes — most service calls)" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="630" y="580" width="400" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-def-1" value="API call changes device state&lt;br&gt;on Honeywell cloud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="700" y="625" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-def-2" value="&lt;b&gt;Next coordinator refresh&lt;/b&gt;&lt;br&gt;device.refresh() fetches new state" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="700" y="685" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-def-a1" value="≤ 60s" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;fontSize=10;fontColor=#999999;" parent="1" source="sc-def-1" target="sc-def-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-def-3" value="Coordinator notifies entities&lt;br&gt;→ state auto-updated in HA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="700" y="740" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-def-a2" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;" parent="1" source="sc-def-2" target="sc-def-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-err-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;dashed=1;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="140" y="810" width="900" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-err-title" value="&lt;b&gt;Service Call Error Handling&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="155" y="815" width="250" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-err-1" value="&lt;b&gt;ConnectionError&lt;/b&gt;&lt;br&gt;UnexpectedResponse&lt;br&gt;→ HomeAssistantError&lt;br&gt;(shown to user)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="160" y="845" width="200" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-err-2" value="&lt;b&gt;SomeComfortError&lt;/b&gt;&lt;br&gt;(invalid temp value)&lt;br&gt;→ ServiceValidationError&lt;br&gt;(shown with details)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="390" y="845" width="220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-err-3" value="&lt;b&gt;Unhandled exception&lt;/b&gt;&lt;br&gt;→ HA logs error&lt;br&gt;→ Entity remains available&lt;br&gt;(coordinator state unchanged)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="640" y="845" width="220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-ref-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#cccccc;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="1100" y="80" width="280" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-ref-title" value="&lt;b&gt;Service Method Reference&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="1105" y="85" width="270" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sc-ref-content" value="&lt;div style=&quot;text-align:left;font-size:10px;&quot;&gt;&lt;b style=&quot;color:#82b366&quot;&gt;Climate:&lt;/b&gt;&lt;br&gt;• set_temperature → set_hold/setpoint&lt;br&gt;• set_fan_mode → set_fan_mode&lt;br&gt;• set_hvac_mode → set_system_mode&lt;br&gt;• set_preset_mode (away)&lt;br&gt;&amp;nbsp;&amp;nbsp;→ set_hold_{cool,heat}(True, temp)&lt;br&gt;• set_preset_mode (hold)&lt;br&gt;&amp;nbsp;&amp;nbsp;→ set_hold_{cool,heat}(True)&lt;br&gt;• set_preset_mode (none)&lt;br&gt;&amp;nbsp;&amp;nbsp;→ set_hold_{cool,heat}(False)&lt;br&gt;&lt;br&gt;&lt;b style=&quot;color:#82b366&quot;&gt;Humidifier:&lt;/b&gt;&lt;br&gt;• set_humidity → set_*_setpoint&lt;br&gt;• turn_on → set_*_auto&lt;br&gt;• turn_off → set_*_off&lt;br&gt;&lt;br&gt;&lt;b style=&quot;color:#82b366&quot;&gt;Switch:&lt;/b&gt;&lt;br&gt;• turn_on → set_system_mode(emheat)&lt;br&gt;• turn_off → set_system_mode(off)&lt;br&gt;&lt;br&gt;&lt;b style=&quot;color:#82b366&quot;&gt;Sensor:&lt;/b&gt;&lt;br&gt;• (read-only, no service methods)&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1115" y="110" width="255" height="360" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="dependencies" name="Dependencies &amp; Entity Map">
+    <mxGraphModel dx="1439" dy="1210" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="dep-title" value="Dependencies &amp; Per-Device Entity Map" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="300" y="20" width="800" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-section" value="&lt;b&gt;Dependency Tree&lt;/b&gt;" style="text;html=1;fontSize=15;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="60" y="70" width="350" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-python" value="&lt;b&gt;Python 3.13+&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="120" y="110" width="230" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-ha" value="&lt;b&gt;Home Assistant Core&lt;/b&gt;&lt;br&gt;homeassistant (pip)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="120" y="170" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-a1" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;" parent="1" source="dep-python" target="dep-ha" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-aiohttp" value="aiohttp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8e8e8;strokeColor=#999999;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="370" y="175" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-a-aio" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#999999;dashed=1;" parent="1" source="dep-ha" target="dep-aiohttp" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-integ" value="&lt;b&gt;custom_components/honeywell&lt;/b&gt;&lt;br&gt;(this integration)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="120" y="240" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-a2" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;" parent="1" source="dep-ha" target="dep-integ" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-aisc" value="&lt;b&gt;AIOSomecomfort==0.0.35&lt;/b&gt;&lt;br&gt;(pip requirement)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="120" y="310" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-a3" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;" parent="1" source="dep-integ" target="dep-aisc" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-cloud" value="&lt;b&gt;Honeywell TCC REST API&lt;/b&gt;&lt;br&gt;(external cloud service)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="120" y="380" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-a4" value="HTTPS" style="strokeWidth=1.5;endArrow=block;endFill=1;rounded=1;fontSize=10;fontColor=#b85450;" parent="1" source="dep-aisc" target="dep-cloud" edge="1">
+          <mxGeometry x="-0.28" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dep-test-section" value="&lt;b&gt;Test Dependencies&lt;/b&gt;" style="text;html=1;fontSize=13;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="60" y="450" width="350" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-pytest" value="pytest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="60" y="485" width="95" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-phacc" value="pytest-homeassistant-&lt;br&gt;custom-component" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="170" y="485" width="155" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-ruff" value="ruff" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="340" y="485" width="55" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-mypy" value="mypy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="405" y="485" width="55" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-section" value="&lt;b&gt;Per-Device Entity Map&lt;/b&gt;" style="text;html=1;fontSize=15;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="600" y="70" width="500" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-device" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#333333;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="530" y="110" width="680" height="510" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-device-title" value="&lt;b&gt;SomeComfortDevice&lt;/b&gt; (one physical thermostat)" style="text;html=1;align=center;verticalAlign=top;fontSize=13;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="540" y="115" width="660" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-climate" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="555" y="150" width="630" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-climate-title" value="&lt;b&gt;climate.&lt;name&gt;&lt;/b&gt;  (always created, 1 per device)" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="565" y="155" width="350" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-climate-attrs" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;State:&lt;/b&gt; current_temperature, target_temperature, hvac_mode, hvac_action, fan_mode, preset_mode&lt;br&gt;&lt;b&gt;Attributes:&lt;/b&gt; current_humidity, fan_action, permanent_hold, dr_phase, min/max_temp&lt;br&gt;&lt;b&gt;HVAC modes:&lt;/b&gt; off · heat · cool · heat_cool · (device-dependent)&lt;br&gt;&lt;b&gt;Presets:&lt;/b&gt; None · Away · Hold&lt;br&gt;&lt;b&gt;Features:&lt;/b&gt; TARGET_TEMP · TEMP_RANGE · PRESET_MODE · [FAN_MODE] · [TURN_ON/OFF] · [TARGET_HUMIDITY]&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="565" y="178" width="610" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-sensors" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="555" y="295" width="630" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-sensors-title" value="&lt;b&gt;Sensors&lt;/b&gt;  (created only if value is not None)" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="565" y="300" width="350" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-s1" value="sensor.&lt;name&gt;_&lt;br&gt;outdoor_temperature" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="570" y="328" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-s2" value="sensor.&lt;name&gt;_&lt;br&gt;outdoor_humidity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="725" y="328" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-s3" value="sensor.&lt;name&gt;_&lt;br&gt;current_temperature" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="880" y="328" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-s4" value="sensor.&lt;name&gt;_&lt;br&gt;current_humidity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1035" y="328" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-humid" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="555" y="400" width="420" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-humid-title" value="&lt;b&gt;Humidifiers&lt;/b&gt;  (0-2, if device supports)" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="565" y="405" width="350" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-h1" value="humidifier.&lt;name&gt;_&lt;br&gt;humidifier&lt;br&gt;&lt;i style=&quot;font-size:9px&quot;&gt;(if has_humidifier)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="570" y="430" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-h2" value="humidifier.&lt;name&gt;_&lt;br&gt;dehumidifier&lt;br&gt;&lt;i style=&quot;font-size:9px&quot;&gt;(if has_dehumidifier)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="775" y="430" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-switch" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="990" y="400" width="195" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-switch-title" value="&lt;b&gt;Switch&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="1000" y="405" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-sw1" value="switch.&lt;name&gt;_&lt;br&gt;emergency_heat&lt;br&gt;&lt;i style=&quot;font-size:9px&quot;&gt;(if EmHeat allowed)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1005" y="430" width="165" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-summary" value="&lt;b&gt;Per device: 1 climate + up to 4 sensors + up to 2 humidifiers + up to 1 switch = up to 8 entities&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="530" y="530" width="680" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-mod-section" value="&lt;b&gt;Module Internal Dependencies&lt;/b&gt;" style="text;html=1;fontSize=13;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="60" y="560" width="350" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-init" value="__init__.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="170" y="600" width="130" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-coord" value="coordinator.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="170" y="660" width="130" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-const" value="const.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="170" y="720" width="130" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-climate" value="climate.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="370" y="720" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-sensor" value="sensor.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="370" y="600" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-humidifier" value="humidifier.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="370" y="640" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-switch" value="switch.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="370" y="680" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-a1" value="imports" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;fontSize=9;fontColor=#999999;" parent="1" source="mod-init" target="mod-coord" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-a2" value="imports" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;fontSize=9;fontColor=#999999;" parent="1" source="mod-coord" target="mod-const" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-a3" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="mod-climate" target="mod-coord" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-a4" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="mod-sensor" target="mod-coord" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-a5" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="mod-humidifier" target="mod-coord" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-a6" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#82b366;" parent="1" source="mod-switch" target="mod-coord" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-a7" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#999999;dashed=1;" parent="1" source="mod-climate" target="mod-const" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="api-breakdown" name="Honeywell API Breakdown">
+    <mxGraphModel dx="2087" dy="1755" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="api-title" value="AIOSomeComfort API Breakdown (aiosomecomfort==0.0.35)" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="200" y="15" width="1200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="client-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="30" y="70" width="370" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="client-title" value="&lt;b style=&quot;font-size:14px&quot;&gt;AIOSomeComfort&lt;/b&gt;  (Client)" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="40" y="75" width="350" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="client-constructor" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.5&quot;&gt;&lt;b&gt;Constructor:&lt;/b&gt;&lt;br&gt;&lt;code&gt;AIOSomeComfort(username, password,&lt;br&gt;&amp;nbsp;&amp;nbsp;timeout=30, session=ClientSession)&lt;/code&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="45" y="105" width="340" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="client-methods" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.5&quot;&gt;&lt;b&gt;Methods:&lt;/b&gt;&lt;br&gt;&lt;code&gt;async login()&lt;/code&gt; → authenticate with API&lt;br&gt;&lt;code&gt;async logoff()&lt;/code&gt; → end session&lt;br&gt;&lt;code&gt;async discover()&lt;/code&gt; → find all locations/devices&lt;br&gt;&lt;code&gt;get_device(device_id)&lt;/code&gt; → Device | None&lt;br&gt;&lt;code&gt;async get_data(thermostat_id)&lt;/code&gt; → dict&lt;br&gt;&lt;code&gt;async get_thermostat_data(id)&lt;/code&gt; → dict&lt;br&gt;&lt;code&gt;async get_humidifier_data(id)&lt;/code&gt; → dict&lt;br&gt;&lt;code&gt;async get_dehumidifier_data(id)&lt;/code&gt; → dict&lt;br&gt;&lt;code&gt;async set_thermostat_settings(id, dict)&lt;/code&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="45" y="170" width="340" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="client-props" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.5&quot;&gt;&lt;b&gt;Properties:&lt;/b&gt;&lt;br&gt;&lt;code&gt;locations_by_id&lt;/code&gt; → dict[str, Location]&lt;br&gt;&lt;code&gt;default_device&lt;/code&gt; → Device | None&lt;br&gt;&lt;code&gt;next_login&lt;/code&gt; → datetime (rate limit)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3cde3;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="45" y="363" width="340" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="location-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;arcSize=6;" parent="1" vertex="1">
+          <mxGeometry x="30" y="500" width="370" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="location-title" value="&lt;b style=&quot;font-size:13px&quot;&gt;Location&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="40" y="505" width="350" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location-content" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.5&quot;&gt;&lt;code&gt;locationid&lt;/code&gt; → str (unique ID)&lt;br&gt;&lt;code&gt;devices_by_id&lt;/code&gt; → dict[str, Device]&lt;br&gt;&lt;code&gt;devices_by_name&lt;/code&gt; → dict[str, Device]&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="45" y="528" width="340" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="api-a-cl" value="contains" style="strokeWidth=1;endArrow=diamond;endFill=1;rounded=1;fontSize=9;fontColor=#999999;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="client-box" target="location-box" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="214.99999999999977" y="510" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="device-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;arcSize=3;" parent="1" vertex="1">
+          <mxGeometry x="450" y="70" width="760" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="device-title" value="&lt;b style=&quot;font-size:14px&quot;&gt;Device&lt;/b&gt;  (SomeComfortDevice)" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="460" y="75" width="740" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-identity" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Identity:&lt;/b&gt;&lt;br&gt;&lt;code&gt;deviceid&lt;/code&gt; → str&lt;br&gt;&lt;code&gt;mac_address&lt;/code&gt; → str&lt;br&gt;&lt;code&gt;name&lt;/code&gt; → str&lt;br&gt;&lt;code&gt;is_alive&lt;/code&gt; → bool&lt;br&gt;&lt;code&gt;temperature_unit&lt;/code&gt; → &quot;F&quot; | &quot;C&quot;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="465" y="105" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-temp" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Temperature State:&lt;/b&gt;&lt;br&gt;&lt;code&gt;current_temperature&lt;/code&gt; → float&lt;br&gt;&lt;code&gt;outdoor_temperature&lt;/code&gt; → float | None&lt;br&gt;&lt;code&gt;setpoint_cool&lt;/code&gt; → float&lt;br&gt;&lt;code&gt;setpoint_heat&lt;/code&gt; → float&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="695" y="105" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-humid" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Humidity State:&lt;/b&gt;&lt;br&gt;&lt;code&gt;current_humidity&lt;/code&gt; → float | None&lt;br&gt;&lt;code&gt;outdoor_humidity&lt;/code&gt; → float | None&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="935" y="105" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-system" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;System State:&lt;/b&gt;&lt;br&gt;&lt;code&gt;system_mode&lt;/code&gt; → &quot;emheat&quot; | &quot;heat&quot; | &quot;off&quot; | &quot;cool&quot; | &quot;auto&quot;&lt;br&gt;&lt;code&gt;equipment_output_status&lt;/code&gt; → &quot;off&quot; | &quot;fan&quot; | &quot;heat&quot; | &quot;cool&quot;&lt;br&gt;&lt;code&gt;fan_mode&lt;/code&gt; → &quot;auto&quot; | &quot;on&quot; | &quot;circulate&quot; | &quot;follow schedule&quot; | None&lt;br&gt;&lt;code&gt;fan_running&lt;/code&gt; → bool&lt;br&gt;&lt;code&gt;hold_heat&lt;/code&gt; → False | True | datetime.time&lt;br&gt;&lt;code&gt;hold_cool&lt;/code&gt; → False | True | datetime.time&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="465" y="215" width="420" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-humidifier" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Humidifier / Dehumidifier State:&lt;/b&gt;&lt;br&gt;&lt;code&gt;has_humidifier&lt;/code&gt; / &lt;code&gt;has_dehumidifier&lt;/code&gt; → bool&lt;br&gt;&lt;code&gt;humidifier_mode&lt;/code&gt; / &lt;code&gt;dehumidifier_mode&lt;/code&gt; → int (0=off, 1=auto)&lt;br&gt;&lt;code&gt;humidifier_setpoint&lt;/code&gt; / &lt;code&gt;dehumidifier_setpoint&lt;/code&gt; → int (%)&lt;br&gt;&lt;code&gt;humidifier_upper_limit&lt;/code&gt; / &lt;code&gt;dehumidifier_upper_limit&lt;/code&gt; → int&lt;br&gt;&lt;code&gt;humidifier_lower_limit&lt;/code&gt; / &lt;code&gt;dehumidifier_lower_limit&lt;/code&gt; → int&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="465" y="340" width="420" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-raw" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Raw API Data:&lt;/b&gt;&lt;br&gt;&lt;code&gt;raw_ui_data&lt;/code&gt; → dict (deep copy)&lt;br&gt;&lt;code&gt;raw_fan_data&lt;/code&gt; → dict (deep copy)&lt;br&gt;&lt;code&gt;raw_dr_data&lt;/code&gt; → dict (deep copy)&lt;br&gt;&lt;code&gt;raw_data&lt;/code&gt; → dict (deep copy)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="895" y="215" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-caps" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Capability Flags:&lt;/b&gt;&lt;br&gt;&lt;code&gt;hasFan&lt;/code&gt; — via raw_ui_data&lt;br&gt;&lt;code&gt;SwitchEmergencyHeatAllowed&lt;/code&gt;&lt;br&gt;&lt;code&gt;canControlHumidification&lt;/code&gt;&lt;br&gt;(read from raw_ui_data dict)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2e6;strokeColor=#82b366;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="895" y="315" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-method-divider" value="&lt;b&gt;Command Methods&lt;/b&gt;  (all async, HTTP POST to API)" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#333333;fontStyle=5;" parent="1" vertex="1">
+          <mxGeometry x="465" y="448" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-therm-cmds" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Thermostat:&lt;/b&gt;&lt;br&gt;&lt;code&gt;refresh()&lt;/code&gt; — fetch latest state&lt;br&gt;&lt;code&gt;set_system_mode(mode)&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_fan_mode(mode)&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_setpoint_cool(temp)&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_setpoint_heat(temp)&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_hold_cool(value, temp=None)&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_hold_heat(value, temp=None)&lt;/code&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="465" y="475" width="270" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-humid-cmds" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Humidifier:&lt;/b&gt;&lt;br&gt;&lt;code&gt;set_humidifier_setpoint(%)&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_humidifier_auto()&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_humidifier_off()&lt;/code&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Dehumidifier:&lt;/b&gt;&lt;br&gt;&lt;code&gt;set_dehumidifier_setpoint(%)&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_dehumidifier_auto()&lt;/code&gt;&lt;br&gt;&lt;code&gt;set_dehumidifier_off()&lt;/code&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="750" y="475" width="230" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-hold" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Hold Types:&lt;/b&gt;&lt;br&gt;&lt;code&gt;False&lt;/code&gt; → &quot;schedule&quot; (follow normal)&lt;br&gt;&lt;code&gt;True&lt;/code&gt; → &quot;permanent&quot; (hold indefinitely)&lt;br&gt;&lt;code&gt;datetime.time&lt;/code&gt; → &quot;temporary&quot;&lt;br&gt;&amp;nbsp;&amp;nbsp;(hold until time, 15-min boundary)&lt;br&gt;&lt;br&gt;&lt;b&gt;Humidity step:&lt;/b&gt; rounded to 5%&lt;br&gt;&lt;b&gt;Deadband:&lt;/b&gt; enforced between&lt;br&gt;heat and cool setpoints&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="995" y="475" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="api-a-ld" value="contains" style="strokeWidth=1;endArrow=diamond;endFill=1;rounded=1;fontSize=9;fontColor=#999999;strokeColor=#82b366;exitX=1.006;exitY=0.913;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="client-box" target="device-box" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="431.7948717948718" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exc-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="30" y="640" width="370" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-title" value="&lt;b style=&quot;font-size:13px&quot;&gt;Exception Hierarchy&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="40" y="645" width="350" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-base" value="&lt;b&gt;SomeComfortError&lt;/b&gt; (base)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="100" y="670" width="230" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-conn-timeout" value="ConnectionTimeout" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="50" y="710" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-conn-err" value="ConnectionError" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="200" y="710" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-auth" value="AuthError" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="744" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-api" value="APIError" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="200" y="744" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-rate" value="APIRateLimited" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="778" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-session" value="SessionTimedOut" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="200" y="778" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-unavail" value="ServiceUnavailable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="50" y="812" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-unexpected" value="UnexpectedResponse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="812" width="140" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-unauth" value="UnauthorizedError" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="846" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l1" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-conn-timeout" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l2" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-conn-err" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l3" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-auth" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l4" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-api" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l5" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-rate" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l6" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-session" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l7" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-unavail" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l8" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-unexpected" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-l9" style="strokeWidth=1;endArrow=none;rounded=1;strokeColor=#b85450;" parent="1" source="exc-base" target="exc-unauth" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-note" value="&lt;b&gt;Bold&lt;/b&gt; = caught by HoneywellCoordinator" style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#666666;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="50" y="880" width="330" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="exc-mapping" value="&lt;div style=&quot;text-align:left;font-size:9px;line-height:1.4&quot;&gt;&lt;b&gt;Coordinator mapping:&lt;/b&gt;&lt;br&gt;UnauthorizedError → re-login attempt&lt;br&gt;AuthError → ConfigEntryAuthFailed (reauth)&lt;br&gt;APIRateLimited → UpdateFailed (retry later)&lt;br&gt;UnexpectedResponse → UpdateFailed&lt;br&gt;ConnectionError/Timeout → UpdateFailed&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#b85450;fontSize=9;align=left;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry x="50" y="905" width="330" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ep-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="450" y="670" width="760" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="ep-title" value="&lt;b style=&quot;font-size:13px&quot;&gt;REST API Endpoints&lt;/b&gt;  (mytotalconnectcomfort.com)" style="text;html=1;align=center;verticalAlign=top;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="460" y="675" width="740" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="ep-auth" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.5&quot;&gt;&lt;b style=&quot;color:#b85450&quot;&gt;Authentication:&lt;/b&gt;&lt;br&gt;&lt;code&gt;POST /portal&lt;/code&gt; — login (username, password, timeOffset, RememberMe)&lt;br&gt;&lt;code&gt;GET  /portal&lt;/code&gt; — validate session&lt;br&gt;&lt;code&gt;POST /portal/Account/LogOff&lt;/code&gt; — logout&lt;br&gt;&lt;br&gt;Auth: &lt;b&gt;.ASPXAUTH_TRUEHOME&lt;/b&gt; session cookie (legacy, no JWT in v0.0.35)&lt;br&gt;Rate limit: max 3 failed attempts, then 10-min cooldown&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7e6;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="465" y="705" width="480" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="ep-data" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.5&quot;&gt;&lt;b style=&quot;color:#82b366&quot;&gt;Read (Polling):&lt;/b&gt;&lt;br&gt;&lt;code&gt;POST /portal/Location/GetLocationListData/&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ discover locations &amp; devices (pages 1-4)&lt;br&gt;&lt;code&gt;GET  /portal/Device/CheckDataSession/{id}&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ thermostat state (used by refresh())&lt;br&gt;&lt;code&gt;POST /portal/Device/Menu/GetData&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ complete device data&lt;br&gt;&lt;code&gt;POST /portal/Device/Menu/GetHumData/{id}&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ humidifier state&lt;br&gt;&lt;code&gt;POST /portal/Device/Menu/GetDehumData/{id}&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ dehumidifier state&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7e6;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="465" y="850" width="370" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="ep-cmds" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.5&quot;&gt;&lt;b style=&quot;color:#d6b656&quot;&gt;Write (Commands):&lt;/b&gt;&lt;br&gt;&lt;code&gt;POST /portal/Device/SubmitControlScreenChanges&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ set system_mode, fan_mode, setpoints, holds&lt;br&gt;&amp;nbsp;&amp;nbsp;→ JSON body: {DeviceID, SystemSwitch,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;HeatSetpoint, CoolSetpoint,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;StatusHeat, StatusCool, FanMode, ...}&lt;br&gt;&lt;br&gt;&lt;code&gt;POST /portal/Device/Menu/Humidifier&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ set humidifier mode/setpoint&lt;br&gt;&lt;br&gt;&lt;code&gt;POST /portal/Device/Menu/Dehumidifier&lt;/code&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;→ set dehumidifier mode/setpoint&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7e6;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="850" y="850" width="345" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-flow-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#cccccc;dashed=1;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="960" y="700" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-flow-title" value="&lt;b&gt;Auth Flow&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=top;fontSize=11;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="965" y="703" width="230" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-1" value="POST /portal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="975" y="725" width="95" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-2" value="Set-Cookie:&lt;br&gt;.ASPXAUTH" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="1085" y="725" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-a1" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#666666;" parent="1" source="auth-1" target="auth-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-3" value="GET /portal&lt;br&gt;(validate)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="975" y="765" width="95" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-4" value="All subsequent&lt;br&gt;requests use cookie" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="1085" y="765" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-a2" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#666666;" parent="1" source="auth-2" target="auth-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-a3" style="strokeWidth=1;endArrow=block;endFill=1;rounded=1;strokeColor=#666666;" parent="1" source="auth-3" target="auth-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="const-box" value="&lt;div style=&quot;text-align:left;font-size:10px;line-height:1.4&quot;&gt;&lt;b&gt;Module Constants:&lt;/b&gt;&lt;br&gt;&lt;code&gt;DOMAIN&lt;/code&gt; = &quot;mytotalconnectcomfort.com&quot;&lt;br&gt;&lt;code&gt;AUTH_COOKIE&lt;/code&gt; = &quot;.ASPXAUTH_TRUEHOME&quot;&lt;br&gt;&lt;code&gt;MIN_LOGIN_TIME&lt;/code&gt; = 10 minutes&lt;br&gt;&lt;code&gt;MAX_LOGIN_ATTEMPTS&lt;/code&gt; = 3&lt;br&gt;&lt;code&gt;FAN_MODES&lt;/code&gt; = [auto, on, circulate, follow schedule]&lt;br&gt;&lt;code&gt;SYSTEM_MODES&lt;/code&gt; = [emheat, heat, off, cool, auto]&lt;br&gt;&lt;code&gt;HOLD_TYPES&lt;/code&gt; = [schedule, temporary, permanent]&lt;br&gt;&lt;code&gt;HUMIDITY_STEP&lt;/code&gt; = 5&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;" parent="1" vertex="1">
+          <mxGeometry x="30" y="1010" width="370" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="api-legend" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#cccccc;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="660" y="1070" width="370" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="api-legend-title" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="670" y="1073" width="80" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l1" value="" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="672" y="1095" width="15" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l1-t" value="Client" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="692" y="1091" width="50" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l2" value="" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="750" y="1095" width="15" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l2-t" value="Device state" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="770" y="1091" width="70" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l3" value="" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="845" y="1095" width="15" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l3-t" value="Commands / Endpoints" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="865" y="1091" width="120" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l4" value="" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="672" y="1115" width="15" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l4-t" value="Exceptions" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="692" y="1111" width="70" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l5" value="" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="750" y="1115" width="15" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l5-t" value="Location" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="770" y="1111" width="60" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l6" value="" style="rounded=1;fillColor=#f5f5f5;strokeColor=#999999;" parent="1" vertex="1">
+          <mxGeometry x="845" y="1115" width="15" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="api-l6-t" value="Constants" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="865" y="1111" width="60" height="18" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
