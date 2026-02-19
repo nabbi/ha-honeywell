@@ -2,6 +2,7 @@
 
 import aiosomecomfort
 from aiohttp.client_exceptions import ClientConnectionError
+from aiosomecomfort import APIRateLimited
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
@@ -50,6 +51,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: HoneywellConfigEn
 
     except aiosomecomfort.device.AuthError as ex:
         raise ConfigEntryAuthFailed("Incorrect Password") from ex
+
+    except APIRateLimited as ex:
+        raise ConfigEntryNotReady("API rate limited, will retry with backoff") from ex
 
     except (
         aiosomecomfort.device.ConnectionError,

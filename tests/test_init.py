@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, create_autospec
 import aiosomecomfort
 import pytest
 from aiohttp.client_exceptions import ClientConnectionError
+from aiosomecomfort import APIRateLimited
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
@@ -131,6 +132,17 @@ async def test_connection_error(
 ) -> None:
     """Test Connection errors from API."""
     client.login.side_effect = the_error
+    await init_integration(hass, config_entry)
+    assert config_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_rate_limited(
+    hass: HomeAssistant,
+    client: MagicMock,
+    config_entry: MagicMock,
+) -> None:
+    """Test API rate limited triggers retry."""
+    client.login.side_effect = APIRateLimited
     await init_integration(hass, config_entry)
     assert config_entry.state is ConfigEntryState.SETUP_RETRY
 
