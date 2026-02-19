@@ -28,6 +28,13 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
+_TRANSIENT_ERRORS = (
+    TimeoutError,
+    AscConnectionError,
+    APIRateLimited,
+    ClientConnectionError,
+)
+
 type HoneywellConfigEntry = ConfigEntry[HoneywellData]
 
 
@@ -78,30 +85,30 @@ class HoneywellCoordinator(DataUpdateCoordinator[dict[int, SomeComfortDevice]]):
     async def _async_update_data(self) -> dict[int, SomeComfortDevice]:
         """Fetch data from Honeywell."""
         try:
-            for device in self.devices.values():
-                await device.refresh()
+            await self._async_refresh_devices()
         except UnauthorizedError:
             try:
                 await self.client.login()
-                for device in self.devices.values():
-                    await device.refresh()
+                await self._async_refresh_devices()
             except AuthError as ex:
                 raise ConfigEntryAuthFailed("Incorrect credentials") from ex
-            except (
-                TimeoutError,
-                AscConnectionError,
-                APIRateLimited,
-                ClientConnectionError,
-            ) as ex:
-                raise UpdateFailed(f"Failed to refresh after re-login: {ex}") from ex
-        except (
-            TimeoutError,
-            AscConnectionError,
-            APIRateLimited,
-            ClientConnectionError,
-        ) as err:
-            raise UpdateFailed(f"Connection failed: {err}") from err
+            except _TRANSIENT_ERRORS as ex:
+                return self._handle_transient_error(f"Failed to refresh after re-login: {ex}", ex)
+        except _TRANSIENT_ERRORS as err:
+            return self._handle_transient_error(f"Connection failed: {err}", err)
         except UnexpectedResponse as err:
-            raise UpdateFailed(f"Unexpected API response: {err}") from err
+            return self._handle_transient_error(f"Unexpected API response: {err}", err)
 
         return self.devices
+
+    async def _async_refresh_devices(self) -> None:
+        """Refresh all devices."""
+        for device in self.devices.values():
+            await device.refresh()
+
+    def _handle_transient_error(self, msg: str, err: Exception) -> dict[int, SomeComfortDevice]:
+        """Return stale data on transient errors, or raise if no prior data."""
+        if self.data is not None:
+            _LOGGER.warning("%s; returning cached data", msg)
+            return self.devices
+        raise UpdateFailed(msg) from err

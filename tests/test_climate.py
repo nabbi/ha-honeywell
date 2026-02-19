@@ -1067,14 +1067,14 @@ async def test_async_update_errors(
     config_entry: MagicMock,
     client: MagicMock,
 ) -> None:
-    """Test coordinator update with errors makes entity unavailable."""
+    """Test transient errors return cached data, keeping entities available."""
     await init_integration(hass, config_entry)
 
     entity_id = f"climate.{device.name}"
     state = hass.states.get(entity_id)
     assert state.state == "off"
 
-    # Simulate connection error - coordinator marks entity unavailable immediately
+    # Simulate connection error - entity keeps cached state
     device.refresh.side_effect = ClientConnectionError
     async_fire_time_changed(
         hass,
@@ -1083,7 +1083,7 @@ async def test_async_update_errors(
     await hass.async_block_till_done()
 
     state = hass.states.get(entity_id)
-    assert state.state == "unavailable"
+    assert state.state == "off"
 
     # Recovery
     device.refresh.side_effect = None
@@ -1095,7 +1095,7 @@ async def test_async_update_errors(
     state = hass.states.get(entity_id)
     assert state.state == "off"
 
-    # UnexpectedResponse also makes entity unavailable via UpdateFailed
+    # UnexpectedResponse also returns cached data
     device.refresh.side_effect = aiosomecomfort.UnexpectedResponse
     async_fire_time_changed(
         hass,
@@ -1104,7 +1104,7 @@ async def test_async_update_errors(
     await hass.async_block_till_done()
 
     state = hass.states.get(entity_id)
-    assert state.state == "unavailable"
+    assert state.state == "off"
 
     # Recovery again
     device.refresh.side_effect = None

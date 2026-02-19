@@ -1,10 +1,11 @@
 """Test the Honeywell coordinator."""
 
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import aiosomecomfort
 import pytest
 from aiohttp import ClientConnectionError
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.util.dt import utcnow
 from pytest_homeassistant_custom_component.common import (
@@ -23,7 +24,7 @@ async def test_coordinator_relogin_connection_error(
     config_entry: MockConfigEntry,
     client: MagicMock,
 ) -> None:
-    """Test coordinator: UnauthorizedError -> re-login -> connection error on refresh."""
+    """Test coordinator returns cached data after re-login connection error."""
     await init_integration(hass, config_entry)
 
     entity_id = f"climate.{device.name}"
@@ -31,14 +32,14 @@ async def test_coordinator_relogin_connection_error(
     assert state.state == "off"
 
     # First refresh raises UnauthorizedError, re-login succeeds,
-    # but the second refresh raises a connection error -> UpdateFailed
+    # but the second refresh raises a connection error -> returns cached data
     device.refresh.side_effect = [aiosomecomfort.UnauthorizedError, ClientConnectionError()]
     client.login.side_effect = None
     async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
     await hass.async_block_till_done()
 
     state = hass.states.get(entity_id)
-    assert state.state == "unavailable"
+    assert state.state == "off"
 
 
 @pytest.mark.parametrize(
@@ -57,7 +58,7 @@ async def test_coordinator_relogin_connection_errors_parametrized(
     client: MagicMock,
     error: type[Exception],
 ) -> None:
-    """Test all connection error types after re-login raise UpdateFailed."""
+    """Test all connection error types after re-login return cached data."""
     await init_integration(hass, config_entry)
 
     entity_id = f"climate.{device.name}"
@@ -68,7 +69,70 @@ async def test_coordinator_relogin_connection_errors_parametrized(
     async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
     await hass.async_block_till_done()
 
-    assert hass.states.get(entity_id).state == "unavailable"
+    assert hass.states.get(entity_id).state == "off"
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        TimeoutError,
+        aiosomecomfort.ConnectionError,
+        aiosomecomfort.APIRateLimited,
+        ClientConnectionError,
+    ],
+)
+async def test_coordinator_transient_error_returns_cached_data(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MockConfigEntry,
+    error: type[Exception],
+) -> None:
+    """Test transient errors return cached data instead of going unavailable."""
+    await init_integration(hass, config_entry)
+
+    entity_id = f"climate.{device.name}"
+    assert hass.states.get(entity_id).state == "off"
+
+    device.refresh.side_effect = error()
+    async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
+    await hass.async_block_till_done()
+
+    # Entity should keep its last known state, not go unavailable
+    assert hass.states.get(entity_id).state == "off"
+
+
+async def test_coordinator_transient_error_no_prior_data(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MockConfigEntry,
+    client: MagicMock,
+) -> None:
+    """Test transient error on first refresh raises UpdateFailed."""
+    # Make the first coordinator refresh fail (during async_config_entry_first_refresh)
+    device.refresh = AsyncMock(side_effect=ClientConnectionError())
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert config_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_coordinator_unexpected_response_returns_cached_data(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MockConfigEntry,
+) -> None:
+    """Test UnexpectedResponse returns cached data instead of going unavailable."""
+    await init_integration(hass, config_entry)
+
+    entity_id = f"climate.{device.name}"
+    assert hass.states.get(entity_id).state == "off"
+
+    device.refresh.side_effect = aiosomecomfort.UnexpectedResponse()
+    async_fire_time_changed(hass, utcnow() + SCAN_INTERVAL)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(entity_id).state == "off"
 
 
 async def test_honeywelldata_client_property(
