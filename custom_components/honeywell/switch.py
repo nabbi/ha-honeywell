@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from aiohttp.client_exceptions import ClientConnectionError
 from aiosomecomfort import SomeComfortError
 from aiosomecomfort.device import Device as SomeComfortDevice
 from homeassistant.components.switch import (
@@ -75,7 +76,7 @@ class HoneywellSwitch(CoordinatorEntity[HoneywellCoordinator], SwitchEntity):
         """Turn the switch on if heat mode is enabled."""
         try:
             await self._device.set_system_mode("emheat")
-        except SomeComfortError as err:
+        except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN, translation_key="switch_failed_on"
             ) from err
@@ -86,7 +87,7 @@ class HoneywellSwitch(CoordinatorEntity[HoneywellCoordinator], SwitchEntity):
             try:
                 await self._device.set_system_mode("off")
 
-            except SomeComfortError as err:
+            except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
                 raise HomeAssistantError(
                     translation_domain=DOMAIN, translation_key="switch_failed_off"
                 ) from err

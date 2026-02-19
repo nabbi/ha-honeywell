@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
+from aiohttp.client_exceptions import ClientConnectionError
 from aiosomecomfort import (
     ConnectionError as AscConnectionError,
 )
@@ -375,7 +376,12 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
                 if mode in ["heat", "emheat"]:
                     await self._device.set_setpoint_heat(temperature)
 
-        except (AscConnectionError, UnexpectedResponse) as err:
+        except (
+            AscConnectionError,
+            UnexpectedResponse,
+            TimeoutError,
+            ClientConnectionError,
+        ) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="temp_failed",
@@ -399,7 +405,12 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
                 if temperature := kwargs.get(ATTR_TARGET_TEMP_LOW):
                     await self._device.set_setpoint_heat(temperature)
 
-            except (AscConnectionError, UnexpectedResponse) as err:
+            except (
+                AscConnectionError,
+                UnexpectedResponse,
+                TimeoutError,
+                ClientConnectionError,
+            ) as err:
                 raise HomeAssistantError(
                     translation_domain=DOMAIN,
                     translation_key="temp_failed",
@@ -418,7 +429,7 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
         try:
             await self._device.set_fan_mode(self._fan_mode_map[fan_mode])
 
-        except SomeComfortError as err:
+        except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="fan_mode_failed",
@@ -429,7 +440,7 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
         try:
             await self._device.set_system_mode(self._hvac_mode_map[hvac_mode])
 
-        except SomeComfortError as err:
+        except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="sys_mode_failed",
@@ -453,7 +464,12 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
             if mode in HEATING_MODES:
                 await self._device.set_hold_heat(True, self._heat_away_temp)
 
-        except (AscConnectionError, UnexpectedResponse) as err:
+        except (
+            AscConnectionError,
+            UnexpectedResponse,
+            TimeoutError,
+            ClientConnectionError,
+        ) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="away_mode_failed",
@@ -490,7 +506,7 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
                 if mode in HEATING_MODES:
                     await self._device.set_hold_heat(True)
 
-            except SomeComfortError as err:
+            except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
                 _LOGGER.error("Couldn't set permanent hold")
                 raise HomeAssistantError(
                     translation_domain=DOMAIN,
@@ -513,7 +529,7 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
             await self._device.set_hold_cool(False)
             await self._device.set_hold_heat(False)
 
-        except SomeComfortError as err:
+        except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
             _LOGGER.error("Can not stop hold mode")
             raise HomeAssistantError(
                 translation_domain=DOMAIN,

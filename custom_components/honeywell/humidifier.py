@@ -6,6 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from aiohttp.client_exceptions import ClientConnectionError
 from aiosomecomfort import SomeComfortError
 from aiosomecomfort.device import Device
 from homeassistant.components.humidifier import (
@@ -140,7 +141,7 @@ class HoneywellHumidifier(CoordinatorEntity[HoneywellCoordinator], HumidifierEnt
         """Turn the device on."""
         try:
             await self.entity_description.on(self._device)
-        except SomeComfortError as err:
+        except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN, translation_key="humidity_on_failed"
             ) from err
@@ -149,7 +150,7 @@ class HoneywellHumidifier(CoordinatorEntity[HoneywellCoordinator], HumidifierEnt
         """Turn the device off."""
         try:
             await self.entity_description.off(self._device)
-        except SomeComfortError as err:
+        except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN, translation_key="humidity_off_failed"
             ) from err
@@ -158,7 +159,7 @@ class HoneywellHumidifier(CoordinatorEntity[HoneywellCoordinator], HumidifierEnt
         """Set new target humidity."""
         try:
             await self.entity_description.set_humidity(self._device, humidity)
-        except SomeComfortError as err:
+        except (SomeComfortError, TimeoutError, ClientConnectionError) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN, translation_key="humidity_setpoint_failed"
             ) from err
