@@ -1,6 +1,6 @@
 """Test honeywell setup process."""
 
-from unittest.mock import MagicMock, create_autospec, patch
+from unittest.mock import MagicMock, create_autospec
 
 import aiosomecomfort
 import pytest
@@ -22,7 +22,6 @@ from . import init_integration
 MIGRATE_OPTIONS_KEYS = {CONF_COOL_AWAY_TEMPERATURE, CONF_HEAT_AWAY_TEMPERATURE}
 
 
-@patch("custom_components.honeywell.UPDATE_LOOP_SLEEP_TIME", 0)
 async def test_setup_entry(hass: HomeAssistant, config_entry: MockConfigEntry) -> None:
     """Initialize the config entry."""
     config_entry.add_to_hass(hass)
@@ -32,7 +31,6 @@ async def test_setup_entry(hass: HomeAssistant, config_entry: MockConfigEntry) -
     assert hass.states.async_entity_ids_count() == 4  # 1 climate entity; 2 sensor entities
 
 
-@patch("custom_components.honeywell.UPDATE_LOOP_SLEEP_TIME", 0)
 async def test_setup_multiple_entry(
     hass: HomeAssistant, config_entry: MockConfigEntry, config_entry2: MockConfigEntry
 ) -> None:

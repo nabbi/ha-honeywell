@@ -15,9 +15,13 @@ from homeassistant.components.humidifier import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import HoneywellConfigEntry
 from .const import DOMAIN
+from .coordinator import HoneywellCoordinator
+
+PARALLEL_UPDATES = 0
 
 HUMIDIFIER_KEY = "humidifier"
 DEHUMIDIFIER_KEY = "dehumidifier"
@@ -77,21 +81,31 @@ async def async_setup_entry(
     entities: list = []
     for device in data.devices.values():
         if device.has_humidifier:
-            entities.append(HoneywellHumidifier(device, HUMIDIFIERS["Humidifier"]))
+            entities.append(
+                HoneywellHumidifier(data.coordinator, device, HUMIDIFIERS["Humidifier"])
+            )
         if device.has_dehumidifier:
-            entities.append(HoneywellHumidifier(device, HUMIDIFIERS["Dehumidifier"]))
+            entities.append(
+                HoneywellHumidifier(data.coordinator, device, HUMIDIFIERS["Dehumidifier"])
+            )
 
     async_add_entities(entities)
 
 
-class HoneywellHumidifier(HumidifierEntity):
+class HoneywellHumidifier(CoordinatorEntity[HoneywellCoordinator], HumidifierEntity):
     """Representation of a Honeywell US (De)Humidifier."""
 
     entity_description: HoneywellHumidifierEntityDescription
     _attr_has_entity_name = True
 
-    def __init__(self, device: Device, description: HoneywellHumidifierEntityDescription) -> None:
+    def __init__(
+        self,
+        coordinator: HoneywellCoordinator,
+        device: Device,
+        description: HoneywellHumidifierEntityDescription,
+    ) -> None:
         """Initialize the (De)Humidifier."""
+        super().__init__(coordinator)
         self._device = device
         self.entity_description = description
         self._attr_unique_id = f"{device.deviceid}_{description.key}"

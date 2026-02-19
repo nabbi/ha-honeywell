@@ -5,16 +5,12 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
-from aiohttp import ClientConnectionError
-from aiosomecomfort import (
-    APIRateLimited,
-    AuthError,
-    SomeComfortError,
-    UnauthorizedError,
-    UnexpectedResponse,
-)
 from aiosomecomfort import (
     ConnectionError as AscConnectionError,
+)
+from aiosomecomfort import (
+    SomeComfortError,
+    UnexpectedResponse,
 )
 from aiosomecomfort.device import Device as SomeComfortDevice
 from homeassistant.components.climate import (
@@ -39,16 +35,19 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.unit_conversion import TemperatureConverter
 
-from . import HoneywellConfigEntry, HoneywellData
+from . import HoneywellConfigEntry
 from .const import (
     _LOGGER,
     CONF_COOL_AWAY_TEMPERATURE,
     CONF_HEAT_AWAY_TEMPERATURE,
     DOMAIN,
-    RETRY,
 )
+from .coordinator import HoneywellCoordinator
+
+PARALLEL_UPDATES = 0
 
 MODE_PERMANENT_HOLD = 2
 MODE_TEMPORARY_HOLD = 1
@@ -94,8 +93,6 @@ HW_FAN_MODE_TO_HA = {
     "follow schedule": FAN_AUTO,
 }
 
-SCAN_INTERVAL = datetime.timedelta(seconds=30)
-
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -110,14 +107,14 @@ async def async_setup_entry(
     _async_migrate_unique_id(hass, data.devices)
     async_add_entities(
         [
-            HoneywellUSThermostat(data, device, cool_away_temp, heat_away_temp)
+            HoneywellUSThermostat(data.coordinator, device, cool_away_temp, heat_away_temp)
             for device in data.devices.values()
         ]
     )
     remove_stale_devices(hass, entry, data.devices)
 
 
-def _async_migrate_unique_id(hass: HomeAssistant, devices: dict[str, SomeComfortDevice]) -> None:
+def _async_migrate_unique_id(hass: HomeAssistant, devices: dict[int, SomeComfortDevice]) -> None:
     """Migrate entities to string."""
     entity_registry = er.async_get(hass)
     for device in devices.values():
@@ -129,7 +126,7 @@ def _async_migrate_unique_id(hass: HomeAssistant, devices: dict[str, SomeComfort
 def remove_stale_devices(
     hass: HomeAssistant,
     config_entry: HoneywellConfigEntry,
-    devices: dict[str, SomeComfortDevice],
+    devices: dict[int, SomeComfortDevice],
 ) -> None:
     """Remove stale devices from device registry."""
     device_registry = dr.async_get(hass)
@@ -153,7 +150,7 @@ def remove_stale_devices(
             )
 
 
-class HoneywellUSThermostat(ClimateEntity):
+class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEntity):
     """Representation of a Honeywell US Thermostat."""
 
     _attr_has_entity_name = True
@@ -162,19 +159,18 @@ class HoneywellUSThermostat(ClimateEntity):
 
     def __init__(
         self,
-        data: HoneywellData,
+        coordinator: HoneywellCoordinator,
         device: SomeComfortDevice,
         cool_away_temp: int | None,
         heat_away_temp: int | None,
     ) -> None:
         """Initialize the thermostat."""
-        self._data = data
+        super().__init__(coordinator)
         self._device = device
         self._cool_away_temp = cool_away_temp
         self._heat_away_temp = heat_away_temp
         self._away = False
         self._away_hold = False
-        self._retry = 0
 
         self._attr_unique_id = str(device.deviceid)
 
@@ -532,47 +528,4 @@ class HoneywellUSThermostat(ClimateEntity):
             await self._turn_hold_mode_on()
         else:
             await self._turn_away_mode_off()
-
-    async def async_update(self) -> None:
-        """Get the latest state from the service."""
-
-        async def _login() -> None:
-            try:
-                await self._data.client.login()
-                await self._device.refresh()
-
-            except (
-                TimeoutError,
-                AscConnectionError,
-                APIRateLimited,
-                AuthError,
-                ClientConnectionError,
-            ):
-                self._retry += 1
-                self._attr_available = self._retry <= RETRY
-                return
-
-            self._attr_available = True
-            self._retry = 0
-
-        try:
-            await self._device.refresh()
-
-        except UnauthorizedError:
-            await _login()
-            return
-        except (
-            TimeoutError,
-            AscConnectionError,
-            APIRateLimited,
-            ClientConnectionError,
-        ):
-            self._retry += 1
-            self._attr_available = self._retry <= RETRY
-            return
-
-        except UnexpectedResponse:
-            return
-
-        self._attr_available = True
-        self._retry = 0
+        self.async_write_ha_state()

@@ -45,9 +45,8 @@ from custom_components.honeywell.climate import (
     MODE_PERMANENT_HOLD,
     MODE_TEMPORARY_HOLD,
     PRESET_HOLD,
-    RETRY,
-    SCAN_INTERVAL,
 )
+from custom_components.honeywell.coordinator import SCAN_INTERVAL
 
 from . import init_integration, reset_mock
 
@@ -1068,26 +1067,15 @@ async def test_async_update_errors(
     config_entry: MagicMock,
     client: MagicMock,
 ) -> None:
-    """Test update with errors."""
+    """Test coordinator update with errors makes entity unavailable."""
     await init_integration(hass, config_entry)
 
-    device.refresh.side_effect = aiosomecomfort.UnauthorizedError
-    client.login.side_effect = aiosomecomfort.AuthError
     entity_id = f"climate.{device.name}"
     state = hass.states.get(entity_id)
     assert state.state == "off"
 
-    # Due to server instability, only mark entity unavailable after RETRY update attempts
-    for _ in range(RETRY):
-        async_fire_time_changed(
-            hass,
-            utcnow() + SCAN_INTERVAL,
-        )
-        await hass.async_block_till_done()
-
-        state = hass.states.get(entity_id)
-        assert state.state == "off"
-
+    # Simulate connection error - coordinator marks entity unavailable immediately
+    device.refresh.side_effect = ClientConnectionError
     async_fire_time_changed(
         hass,
         utcnow() + SCAN_INTERVAL,
@@ -1097,10 +1085,8 @@ async def test_async_update_errors(
     state = hass.states.get(entity_id)
     assert state.state == "unavailable"
 
-    reset_mock(device)
+    # Recovery
     device.refresh.side_effect = None
-    client.login.side_effect = None
-
     async_fire_time_changed(
         hass,
         utcnow() + SCAN_INTERVAL,
@@ -1109,8 +1095,8 @@ async def test_async_update_errors(
     state = hass.states.get(entity_id)
     assert state.state == "off"
 
+    # UnexpectedResponse also makes entity unavailable via UpdateFailed
     device.refresh.side_effect = aiosomecomfort.UnexpectedResponse
-    client.login.side_effect = None
     async_fire_time_changed(
         hass,
         utcnow() + SCAN_INTERVAL,
@@ -1118,8 +1104,19 @@ async def test_async_update_errors(
     await hass.async_block_till_done()
 
     state = hass.states.get(entity_id)
+    assert state.state == "unavailable"
+
+    # Recovery again
+    device.refresh.side_effect = None
+    async_fire_time_changed(
+        hass,
+        utcnow() + SCAN_INTERVAL,
+    )
+    await hass.async_block_till_done()
+    state = hass.states.get(entity_id)
     assert state.state == "off"
 
+    # UnauthorizedError triggers re-login, then recovery
     device.refresh.side_effect = [aiosomecomfort.UnauthorizedError, None]
     client.login.side_effect = None
     async_fire_time_changed(
@@ -1131,7 +1128,22 @@ async def test_async_update_errors(
     state = hass.states.get(entity_id)
     assert state.state == "off"
 
-    device.refresh.side_effect = aiosomecomfort.SomeComfortError
+
+async def test_async_update_auth_failed(
+    hass: HomeAssistant,
+    device: MagicMock,
+    config_entry: MagicMock,
+    client: MagicMock,
+) -> None:
+    """Test coordinator auth failure triggers reauth flow."""
+    await init_integration(hass, config_entry)
+
+    entity_id = f"climate.{device.name}"
+    state = hass.states.get(entity_id)
+    assert state.state == "off"
+
+    # UnauthorizedError + AuthError on re-login -> ConfigEntryAuthFailed
+    device.refresh.side_effect = aiosomecomfort.UnauthorizedError
     client.login.side_effect = aiosomecomfort.AuthError
     async_fire_time_changed(
         hass,
@@ -1139,28 +1151,7 @@ async def test_async_update_errors(
     )
     await hass.async_block_till_done()
 
-    state = hass.states.get(entity_id)
-    assert state.state == "off"
-
-    device.refresh.side_effect = ClientConnectionError
-
-    # Due to server instability, only mark entity unavailable after RETRY update attempts
-    for _ in range(RETRY):
-        async_fire_time_changed(
-            hass,
-            utcnow() + SCAN_INTERVAL,
-        )
-        await hass.async_block_till_done()
-
-        state = hass.states.get(entity_id)
-        assert state.state == "off"
-
-    async_fire_time_changed(
-        hass,
-        utcnow() + SCAN_INTERVAL,
-    )
-    await hass.async_block_till_done()
-
+    # Entity should be unavailable and reauth flow should be triggered
     state = hass.states.get(entity_id)
     assert state.state == "unavailable"
 

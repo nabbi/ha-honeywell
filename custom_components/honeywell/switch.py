@@ -15,9 +15,13 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from . import HoneywellConfigEntry, HoneywellData
+from . import HoneywellConfigEntry
 from .const import DOMAIN
+from .coordinator import HoneywellCoordinator
+
+PARALLEL_UPDATES = 0
 
 EMERGENCY_HEAT_KEY = "emergency_heat"
 
@@ -38,26 +42,26 @@ async def async_setup_entry(
     """Set up the Honeywell switches."""
     data = config_entry.runtime_data
     async_add_entities(
-        HoneywellSwitch(data, device, description)
+        HoneywellSwitch(data.coordinator, device, description)
         for device in data.devices.values()
         if device.raw_ui_data.get("SwitchEmergencyHeatAllowed")
         for description in SWITCH_TYPES
     )
 
 
-class HoneywellSwitch(SwitchEntity):
+class HoneywellSwitch(CoordinatorEntity[HoneywellCoordinator], SwitchEntity):
     """Representation of a honeywell switch."""
 
     _attr_has_entity_name = True
 
     def __init__(
         self,
-        honeywell_data: HoneywellData,
+        coordinator: HoneywellCoordinator,
         device: SomeComfortDevice,
         description: SwitchEntityDescription,
     ) -> None:
         """Initialize the switch."""
-        self._data = honeywell_data
+        super().__init__(coordinator)
         self._device = device
         self.entity_description = description
         self._attr_unique_id = f"{device.deviceid}_{description.key}"

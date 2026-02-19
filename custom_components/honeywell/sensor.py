@@ -18,9 +18,13 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import HoneywellConfigEntry
 from .const import DOMAIN
+from .coordinator import HoneywellCoordinator
+
+PARALLEL_UPDATES = 0
 
 OUTDOOR_TEMPERATURE_STATUS_KEY = "outdoor_temperature"
 OUTDOOR_HUMIDITY_STATUS_KEY = "outdoor_humidity"
@@ -86,21 +90,27 @@ async def async_setup_entry(
     data = config_entry.runtime_data
 
     async_add_entities(
-        HoneywellSensor(device, description)
+        HoneywellSensor(data.coordinator, device, description)
         for device in data.devices.values()
         for description in SENSOR_TYPES
         if getattr(device, description.key) is not None
     )
 
 
-class HoneywellSensor(SensorEntity):
+class HoneywellSensor(CoordinatorEntity[HoneywellCoordinator], SensorEntity):
     """Representation of a Honeywell US Outdoor Temperature Sensor."""
 
     entity_description: HoneywellSensorEntityDescription
     _attr_has_entity_name = True
 
-    def __init__(self, device: Device, description: HoneywellSensorEntityDescription) -> None:
+    def __init__(
+        self,
+        coordinator: HoneywellCoordinator,
+        device: Device,
+        description: HoneywellSensorEntityDescription,
+    ) -> None:
         """Initialize the outdoor temperature sensor."""
+        super().__init__(coordinator)
         self._device = device
         self.entity_description = description
         self._attr_unique_id = f"{device.deviceid}_{description.key}"
