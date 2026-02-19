@@ -1230,3 +1230,42 @@ async def test_preset_mode(
     await hass.async_block_till_done()
     state = hass.states.get(entity_id)
     assert state.attributes[ATTR_PRESET_MODE] == PRESET_NONE
+
+    # Test away mode re-entry: turning away off and back on should not
+    # be corrupted by stale _away_hold state from the previous cycle.
+    device.raw_ui_data["StatusHeat"] = MODE_PERMANENT_HOLD
+    device.raw_ui_data["StatusCool"] = MODE_PERMANENT_HOLD
+
+    await hass.services.async_call(
+        CLIMATE_DOMAIN,
+        SERVICE_SET_PRESET_MODE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_PRESET_MODE: PRESET_AWAY},
+        blocking=True,
+    )
+    state = hass.states.get(entity_id)
+    assert state.attributes[ATTR_PRESET_MODE] == PRESET_AWAY
+
+    # Turn away off — simulate the device clearing hold status
+    device.raw_ui_data["StatusHeat"] = 0
+    device.raw_ui_data["StatusCool"] = 0
+    await hass.services.async_call(
+        CLIMATE_DOMAIN,
+        SERVICE_SET_PRESET_MODE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_PRESET_MODE: PRESET_NONE},
+        blocking=True,
+    )
+    state = hass.states.get(entity_id)
+    assert state.attributes[ATTR_PRESET_MODE] == PRESET_NONE
+
+    # Re-enter away mode with hold active — should show AWAY, not be
+    # cancelled by stale _away_hold from the previous cycle.
+    device.raw_ui_data["StatusHeat"] = MODE_PERMANENT_HOLD
+    device.raw_ui_data["StatusCool"] = MODE_PERMANENT_HOLD
+    await hass.services.async_call(
+        CLIMATE_DOMAIN,
+        SERVICE_SET_PRESET_MODE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_PRESET_MODE: PRESET_AWAY},
+        blocking=True,
+    )
+    state = hass.states.get(entity_id)
+    assert state.attributes[ATTR_PRESET_MODE] == PRESET_AWAY

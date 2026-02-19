@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Mapping
 from typing import Any
 
@@ -24,6 +25,8 @@ from .const import (
     DEFAULT_HEAT_AWAY_TEMPERATURE,
     DOMAIN,
 )
+
+LOGIN_TIMEOUT = 30
 
 REAUTH_SCHEMA = vol.Schema(
     {
@@ -61,6 +64,7 @@ class HoneywellConfigFlow(ConfigFlow, domain=DOMAIN):
             except (
                 aiosomecomfort.ConnectionError,
                 aiosomecomfort.ConnectionTimeout,
+                aiosomecomfort.APIRateLimited,
                 TimeoutError,
             ):
                 errors["base"] = "cannot_connect"
@@ -88,6 +92,7 @@ class HoneywellConfigFlow(ConfigFlow, domain=DOMAIN):
             except (
                 aiosomecomfort.ConnectionError,
                 aiosomecomfort.ConnectionTimeout,
+                aiosomecomfort.APIRateLimited,
                 TimeoutError,
             ):
                 errors["base"] = "cannot_connect"
@@ -119,7 +124,8 @@ class HoneywellConfigFlow(ConfigFlow, domain=DOMAIN):
             session=async_create_clientsession(self.hass),
         )
 
-        await client.login()
+        async with asyncio.timeout(LOGIN_TIMEOUT):
+            await client.login()
         return True
 
     @staticmethod

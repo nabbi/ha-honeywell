@@ -67,6 +67,15 @@
     "fan_mode_failed": {
       "message": "Honeywell could not set fan mode"
     },
+    "humidity_off_failed": {
+      "message": "Honeywell could not turn off (de)humidifier"
+    },
+    "humidity_on_failed": {
+      "message": "Honeywell could not turn on (de)humidifier"
+    },
+    "humidity_setpoint_failed": {
+      "message": "Honeywell could not set (de)humidifier target humidity"
+    },
     "set_hold_failed": {
       "message": "Honeywell could not set permanent hold"
     },

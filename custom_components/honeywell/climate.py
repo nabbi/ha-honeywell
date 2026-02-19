@@ -507,6 +507,7 @@ class HoneywellUSThermostat(CoordinatorEntity[HoneywellCoordinator], ClimateEnti
     async def _turn_away_mode_off(self) -> None:
         """Turn away/hold off."""
         self._away = False
+        self._away_hold = False
         try:
             # Disabling all hold modes
             await self._device.set_hold_cool(False)

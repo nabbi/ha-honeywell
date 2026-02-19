@@ -1,6 +1,7 @@
 """Tests for honeywell config flow."""
 
-from unittest.mock import MagicMock, patch
+import asyncio
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiosomecomfort
 import pytest
@@ -206,3 +207,48 @@ async def test_reauth_flow_connnection_error(hass: HomeAssistant, client: MagicM
 
     assert result2["type"] is FlowResultType.FORM
     assert result2["errors"] == {"base": "cannot_connect"}
+
+
+async def test_rate_limited_error(hass: HomeAssistant, client: MagicMock) -> None:
+    """Test that APIRateLimited is handled in config flow."""
+    client.login.side_effect = aiosomecomfort.APIRateLimited
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}, data=FAKE_CONFIG
+    )
+    assert result["errors"] == {"base": "cannot_connect"}
+
+
+async def test_reauth_flow_rate_limited_error(hass: HomeAssistant, client: MagicMock) -> None:
+    """Test that APIRateLimited is handled in reauth flow."""
+    mock_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_USERNAME: "test-username", CONF_PASSWORD: "test-password"},
+        unique_id="test-username",
+    )
+    mock_entry.add_to_hass(hass)
+    result = await mock_entry.start_reauth_flow(hass)
+
+    client.login.side_effect = aiosomecomfort.APIRateLimited
+    result2 = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {CONF_USERNAME: "new-username", CONF_PASSWORD: "new-password"},
+    )
+    await hass.async_block_till_done()
+
+    assert result2["type"] is FlowResultType.FORM
+    assert result2["errors"] == {"base": "cannot_connect"}
+
+
+async def test_config_flow_login_timeout(hass: HomeAssistant, client: MagicMock) -> None:
+    """Test that a hanging login is bounded by timeout in config flow."""
+
+    async def _hang() -> None:
+        await asyncio.sleep(3600)
+
+    client.login = AsyncMock(side_effect=_hang)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr("custom_components.honeywell.config_flow.LOGIN_TIMEOUT", 0)
+        result = await hass.config_entries.flow.async_init(
+            DOMAIN, context={"source": SOURCE_USER}, data=FAKE_CONFIG
+        )
+    assert result["errors"] == {"base": "cannot_connect"}

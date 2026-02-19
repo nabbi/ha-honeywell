@@ -6,6 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from aiosomecomfort import SomeComfortError
 from aiosomecomfort.device import Device
 from homeassistant.components.humidifier import (
     HumidifierDeviceClass,
@@ -13,6 +14,7 @@ from homeassistant.components.humidifier import (
     HumidifierEntityDescription,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -136,12 +138,27 @@ class HoneywellHumidifier(CoordinatorEntity[HoneywellCoordinator], HumidifierEnt
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the device on."""
-        await self.entity_description.on(self._device)
+        try:
+            await self.entity_description.on(self._device)
+        except SomeComfortError as err:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key="humidity_on_failed"
+            ) from err
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the device off."""
-        await self.entity_description.off(self._device)
+        try:
+            await self.entity_description.off(self._device)
+        except SomeComfortError as err:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key="humidity_off_failed"
+            ) from err
 
     async def async_set_humidity(self, humidity: int) -> None:
         """Set new target humidity."""
-        await self.entity_description.set_humidity(self._device, humidity)
+        try:
+            await self.entity_description.set_humidity(self._device, humidity)
+        except SomeComfortError as err:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key="humidity_setpoint_failed"
+            ) from err
